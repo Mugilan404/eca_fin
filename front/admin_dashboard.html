@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elumalai's Chemistry | Admin Dashboard</title>
+  <link rel="stylesheet" href="admin_dashboard.css">
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+  <style>
+    /* 🔹 Responsive Navbar */
+    .menu-toggle {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.8);
+        position: absolute;
+        top: 60px;
+        right: 20px;
+        padding: 15px;
+        border-radius: 8px;
+      }
+
+      .nav-links.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: block;
+        color: white;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr !important; /* stack cards */
+      }
+    }
+
+    /* 🔹 Card adjustments for mobile */
+    .dashboard-card {
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔹 Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <span>Admin Panel</span>
+      </div>
+      <span class="menu-toggle" onclick="toggleMenu()">☰</span>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="study_materials.html">Study Materials</a></li>
+        <li><a href="online_test.html">Online Test</a></li>
+        <li><a href="login.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 🔹 Dashboard -->
+  <section class="dashboard-container">
+    <h2>Welcome, Admin</h2>
+    <div class="dashboard-grid">
+
+      <!-- Create batch -->
+      <div class="dashboard-card">
+        <h3>📘 Create Batch</h3>
+        <p>Create a new batch for students to join and access study materials.</p>
+        <a href="create-batch.html" class="btn">Go to Create Batch</a>
+      </div>
+
+      <!-- Grant access -->
+      <div class="dashboard-card">
+        <h3>✏️ Grant Access </h3>
+        <p>grant access for users to the specific batch for materials and tests.</p>
+        <a href="grant_access.html" class="btn">Go to Grant Access</a>
+      </div>
+
+      <!-- Revoke access -->
+      <div class="dashboard-card">
+        <h3>✏️ Revoke Access </h3>
+        <p>Revoke the access from the users to view the batch materials and tests.</p>
+        <a href="revoke_access.html" class="btn">Go to Revoke Access</a>
+      </div>
+
+        <!-- Upload Materials -->
+      <div class="dashboard-card">
+        <h3>📘 Upload Study Materials</h3>
+        <p>Add new PDF notes, question banks, and reference docs for students.</p>
+        <a href="upload_material.html" class="btn">Go to Upload Page</a>
+      </div>
+      
+      <!-- Change Pdf  -->
+      <div class="dashboard-card">
+        <h3>📘 Edit pdf  </h3>
+        <p>Change the pdf files for the batch materials.</p>
+        <a href="change_material.html" class="btn">Go to Change Material</a>
+      </div>
+
+      
+
+      <!-- Create Test -->
+      <div class="dashboard-card">
+        <h3>📝 Create New Test</h3>
+        <p>Prepare and publish new online tests with custom questions & answers.</p>
+        <a href="create_test.html" class="btn">Go to Create Test</a>
+      </div>
+
+      <!-- Edit Test -->
+      <div class="dashboard-card">
+        <h3>✏️ Edit Existing Tests</h3>
+        <p>Update or modify test details, questions, and tags.</p>
+        <a href="edit_test.html" class="btn">Go to Edit Page</a>
+      </div>
+
+      <!-- Analytics -->
+      <div class="dashboard-card">
+        <h3>📊 Analytics</h3>
+        <ul>
+          <li>Total Users: <span id="totalUsers">2</span></li>
+          <li>Tests Published: <span id="totalTests">0</span></li>
+          <li>Materials Uploaded: <span id="totalMaterials">2</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <p>© 2025 Elumalai's Chemistry Academy</p>
+  </footer>
+
+  <script>
+    // 🔹 Toggle menu for mobile
+    function toggleMenu() {
+      document.querySelector('.nav-links').classList.toggle('active');
+    }
+
+    // 🚀 In future, fetch analytics dynamically
+    async function loadAnalytics() {
+      try {
+        const res = await fetch("/api/admin/analytics");
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById("totalUsers").textContent = data.users;
+          document.getElementById("totalTests").textContent = data.tests;
+          document.getElementById("totalMaterials").textContent = data.materials;
+        }
+      } catch (err) {
+        console.error("Analytics fetch failed", err);
+      }
+    }
+    loadAnalytics();
+  </script>
+</body>
+</html>

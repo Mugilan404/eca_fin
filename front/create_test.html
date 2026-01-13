@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elumalai's Chemistry Academy | Create Test</title>
+
+  <link rel="stylesheet" href="create_test.css" />
+  <link rel="icon" href="img/logo.png" type="image/x-icon" />
+</head>
+
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin_dashboard.html">Dashboard</a></li>
+      <li><a href="create-batch.html">Create Batch</a></li>
+      <li><a class="active" href="#">Create Test</a></li>
+      <li><a href="student-login.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ===== Create Test Form ===== -->
+<div class="auth-container">
+  <div class="auth-box">
+    <h2>Create Online Test</h2>
+
+    <form id="createTestForm">
+
+      <!-- Batch -->
+      <div class="form-group">
+        <label>Select Test Batch</label>
+        <select id="batch_id" required>
+          <option value="">-- Loading Batches... --</option>
+        </select>
+      </div>
+
+      <!-- Test Name -->
+      <div class="form-group">
+        <label>Test Name</label>
+        <input type="text" id="test_name" required />
+      </div>
+
+      <!-- Test Category -->
+      <div class="form-group">
+        <label>Test Category</label>
+        <input type="text" id="test_category" required />
+      </div>
+
+      <!-- Test Time -->
+      <div class="form-group">
+        <label>Test Duration (Minutes)</label>
+        <input type="number" id="test_time" min="1" required />
+      </div>
+
+      <!-- Total Questions -->
+      <div class="form-group">
+        <label>Total Questions</label>
+        <input type="number" id="total_questions" min="1" required />
+      </div>
+
+      <!-- Upload CSV -->
+      <div class="form-group">
+        <label>Upload Questions CSV</label>
+        <input type="file" id="questions_csv" accept=".csv" required />
+      </div>
+
+      <button type="submit" class="btn">Create Test</button>
+
+      <p id="message"></p>
+
+    </form>
+  </div>
+</div>
+
+<footer>
+  © 2025 Elumalai's Chemistry Academy. All Rights Reserved.
+</footer>
+
+<script>
+/* ===== Mobile Menu ===== */
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("show");
+}
+
+/* ===== Load Batches ===== */
+async function loadBatches() {
+  try {
+    const res = await fetch("/api/batch/tests", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+
+    const data = await res.json();
+    const select = document.getElementById("batch_id");
+
+    select.innerHTML = `<option value="">-- Select Batch --</option>`;
+
+    data.batches.forEach(batch => {
+      const option = document.createElement("option");
+      option.value = batch.batch_id;
+      option.textContent = batch.batch_name;
+      select.appendChild(option);
+    });
+
+  } catch {
+    alert("Failed to load batches");
+  }
+}
+
+/* ===== Create Test + Upload CSV ===== */
+document.getElementById("createTestForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const msg = document.getElementById("message");
+  msg.innerText = "Creating test...";
+  msg.style.color = "black";
+
+  try {
+    /* STEP 1️⃣ CREATE TEST */
+    const testRes = await fetch("/api/tests", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      body: JSON.stringify({
+        batch_id: batch_id.value,
+        test_name: test_name.value,
+        test_category: test_category.value,
+        test_time: test_time.value,
+        total_questions: total_questions.value
+      })
+    });
+
+    const testData = await testRes.json();
+
+    if (!testData.success) {
+      msg.style.color = "red";
+      msg.innerText = testData.message;
+      return;
+    }
+
+    const testId = testData.test_id;
+
+    /* STEP 2️⃣ UPLOAD QUESTIONS CSV */
+    const csvFormData = new FormData();
+    csvFormData.append("questions_csv", questions_csv.files[0]);
+
+    const csvRes = await fetch(`/api/questions/upload/${testId}`, {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      },
+      body: csvFormData
+    });
+
+    const csvData = await csvRes.json();
+
+    if (!csvData.success) {
+      msg.style.color = "red";
+      msg.innerText = "Test created but CSV upload failed";
+      return;
+    }
+
+    msg.style.color = "green";
+    msg.innerText = "✅ Test and questions uploaded successfully";
+
+    document.getElementById("createTestForm").reset();
+
+  } catch (err) {
+    msg.style.color = "red";
+    msg.innerText = "Server error while creating test";
+  }
+});
+
+/* ===== Init ===== */
+loadBatches();
+</script>
+
+</body>
+</html>

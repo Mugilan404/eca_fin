@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elumalai's Chemistry Academy | Upload Material</title>
+
+  <link rel="stylesheet" href="upload_material.css" />
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon" />
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="ECA Logo" />
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="admin_dashboard.html">Dashboard</a></li>
+      <li><a class="active" href="#">Upload Materials</a></li>
+      <li><a href="logout.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ===== Upload Form ===== -->
+<section class="form-container">
+  <h2>📚 Upload Study Material</h2>
+
+  <form id="uploadMaterialForm" enctype="multipart/form-data">
+
+    <!-- Batch -->
+    <label for="batch_id">Select Batch</label>
+    <select id="batch_id" name="batch_id" required>
+      <option value="">-- Select Batch --</option>
+    </select>
+
+    <!-- Material Name -->
+    <label for="material_name">Material Name</label>
+    <input
+      type="text"
+      id="material_name"
+      name="material_name"
+      placeholder="Eg: Organic Chemistry Notes"
+      required
+    />
+
+    <!-- Category --> 
+    <label for="material_category">Material Category</label>
+    <select id="material_category" name="material_category" required>
+      <option value="">-- Select Category --</option>
+      <option value="Organic Chemistry">Organic Chemistry</option>
+      <option value="Inorganic Chemistry">Inorganic Chemistry</option>
+      <option value="Analytical Chemistry">Analytical Chemistry</option>
+      <option value="Physical Chemistry">Physical Chemistry</option>
+    </select>
+
+    <!-- Uploaded By -->
+    <label for="uploaded_by">Uploaded By</label>
+    <input
+      type="text"
+      id="uploaded_by"
+      name="uploaded_by"
+      readonly
+    />
+
+    <!-- File -->
+    <label for="file">Upload Document (PDF only)</label>
+    <input
+      type="file"
+      id="file"
+      name="file"
+      accept=".pdf"
+      required
+    />
+
+    <button type="submit" class="btn">Upload Material</button>
+  </form>
+
+  <p id="errorMsg" class="error"></p>
+  <p id="successMsg" class="success"></p>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+  <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+</footer>
+
+<!-- ===== Script ===== -->
+<script>
+/* ---------------- AUTH CHECK ---------------- */
+const token = localStorage.getItem("token");
+
+if (!token) {
+  alert("Session expired. Please login again.");
+  window.location.href = "admin-login.html";
+}
+
+/* ---------------- JWT PARSE ---------------- */
+function parseJwt(token) {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(base64));
+  } catch {
+    return null;
+  }
+}
+
+const decoded = parseJwt(token);
+document.getElementById("uploaded_by").value =
+  decoded?.name || "Admin";
+
+/* ---------------- LOAD BATCHES ---------------- */
+async function loadBatches() {
+  try {
+    const res = await fetch("/api/batch");
+    const batches = await res.json();
+
+    const batchSelect = document.getElementById("batch_id");
+
+    batches.forEach(batch => {
+      const option = document.createElement("option");
+      option.value = batch.batch_id;
+      option.textContent = batch.batch_name;
+      batchSelect.appendChild(option);
+    });
+
+  } catch (err) {
+    document.getElementById("errorMsg").innerText =
+      "⚠ Failed to load batches";
+  }
+}
+
+/* ---------------- SUBMIT FORM ---------------- */
+document.getElementById("uploadMaterialForm")
+  .addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    try {
+      const res = await fetch("/api/materials/upload", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + token
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        document.getElementById("errorMsg").innerText =
+          data.message || "Upload failed";
+        return;
+      }
+
+      document.getElementById("successMsg").innerText =
+        "✅ Material uploaded successfully";
+
+      e.target.reset();
+      document.getElementById("uploaded_by").value =
+        decoded?.name || "Admin";
+
+    } catch (err) {
+      document.getElementById("errorMsg").innerText =
+        "❌ Server error while uploading material";
+    }
+  });
+
+/* ---------------- MOBILE MENU ---------------- */
+document.getElementById("menu-toggle")
+  .addEventListener("click", () =>
+    document.getElementById("nav-links").classList.toggle("show")
+  );
+
+/* Init */
+loadBatches();
+</script>
+
+</body>
+</html>

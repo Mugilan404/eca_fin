@@ -1,0 +1,235 @@
+/* ======================================================
+   RESET & BASE (COMMON)
+====================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: url("img/bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: #333;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ======================================================
+   HEADER / NAVBAR  (FROM OLD CSS - UNCHANGED)
+====================================================== */
+header {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 12px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 40px;
+  margin-right: 8px;
+}
+
+.logo span {
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+
+.nav-links li {
+  margin-left: 24px;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav-links a:hover,
+.nav-links .active {
+  color: #fbc531;
+}
+
+/* Mobile Toggle */
+.menu-toggle {
+  display: none;
+  font-size: 26px;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* ======================================================
+   PAGE HEADER (CONTENT ONLY - NEW STYLE)
+====================================================== */
+.page-header {
+  background: #eaf4ff;
+  padding: 50px 20px;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 32px;
+  margin-bottom: 8px;
+  color: #111827;
+}
+
+.page-header p {
+  font-size: 16px;
+  color: #4b5563;
+}
+
+/* ======================================================
+   MATERIALS SECTION (NEW STYLE)
+====================================================== */
+.materials-section {
+  max-width: 1100px;
+  margin: 40px auto 100px;
+  padding: 0 20px;
+}
+
+.materials-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 28px;
+}
+
+/* ======================================================
+   MATERIAL CARD (NEW STYLE)
+====================================================== */
+.material-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.material-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 35px rgba(0, 0, 0, 0.12);
+}
+
+.material-card h3 {
+  font-size: 20px;
+  margin-bottom: 6px;
+  color: #111827;
+}
+
+/* Category */
+.material-card .category {
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2563eb;
+  margin-bottom: 6px;
+}
+
+/* Upload Date */
+.material-card .date {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 16px;
+}
+
+/* ======================================================
+   VIEW PDF BUTTON (NEW STYLE)
+====================================================== */
+.material-card .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: #2563eb;
+  color: #ffffff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.25s ease;
+}
+
+.material-card .btn:hover {
+  background: #1d4ed8;
+}
+
+/* ======================================================
+   EMPTY / ERROR STATES
+====================================================== */
+.materials-list p {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 16px;
+  color: #6b7280;
+  padding: 30px 0;
+}
+
+/* ======================================================
+   FOOTER (FROM OLD CSS - UNCHANGED)
+====================================================== */
+footer {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 15px;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  border-top: 3px solid #fbc531;
+  font-size: 15px;
+}
+
+/* ======================================================
+   RESPONSIVE (OLD + SAFE)
+====================================================== */
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background: rgba(0, 0, 0, 0.95);
+    flex-direction: column;
+    width: 220px;
+    display: none;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    z-index: 999;
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  .nav-links li {
+    margin: 12px 0;
+  }
+
+  .page-header h1 {
+    font-size: 26px;
+  }
+}

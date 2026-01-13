@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elumalai's Chemistry Academy | Revoke Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="grant_access.css">
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="img/logo.png" alt="ECA Logo">
+            <span>Elumalai's Chemistry Academy</span>
+        </div>
+
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="admin_dashboard.html">Dashboard</a></li>
+            <li><a href="create-batch.html">Create Batch</a></li>
+            <li><a href="grant_access.html">Grant Access</a></li>
+            <li><a class="active" href="#">Revoke Access</a></li>
+            <li><a href="student-login.html">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ===== Revoke Access Form ===== -->
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Revoke Batch Access</h2>
+
+        <form id="revokeAccessForm">
+
+            <!-- Email -->
+            <div class="form-group">
+                <label>Email ID</label>
+                <input type="email" id="email" placeholder="student@email.com" required>
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Auto fetched" readonly>
+            </div>
+
+            <!-- Accessible Batches -->
+            <div class="form-group">
+                <label>Accessible Batches</label>
+                <select id="batch_id" required>
+                    <option value="">-- Select Batch --</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn" style="background:#dc3545">
+                Revoke Access
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer>
+    © 2025 Elumalai's Chemistry Academy. All Rights Reserved.
+</footer>
+
+<script>
+/* ===== Mobile Menu ===== */
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+}
+
+/* ==================================================
+   FETCH USER + USER ACCESSIBLE BATCHES
+================================================== */
+document.getElementById("email").addEventListener("blur", async () => {
+    const email = document.getElementById("email").value.trim();
+    const usernameField = document.getElementById("username");
+    const batchSelect = document.getElementById("batch_id");
+
+    usernameField.value = "";
+    batchSelect.innerHTML = `<option value="">-- Select Batch --</option>`;
+
+    if (!email) return;
+
+    try {
+        /* ---- Fetch User ---- */
+        const userRes = await fetch(`/api/users/by-email/${encodeURIComponent(email)}`);
+        const userData = await userRes.json();
+
+        if (!userData.success) {
+            alert("User not found");
+            return;
+        }
+
+        usernameField.value = userData.user.name;
+
+        /* ---- Fetch User Accessible Batches ---- */
+        const batchRes = await fetch(
+            `/api/batch/user-batches?email=${encodeURIComponent(email)}`
+        );
+        const batchData = await batchRes.json();
+
+        if (!batchData.success || batchData.batches.length === 0) {
+            alert("User has no batch access");
+            return;
+        }
+
+        batchData.batches.forEach(batch => {
+            const opt = document.createElement("option");
+            opt.value = batch.batch_id;
+            opt.textContent = batch.batch_name;
+            batchSelect.appendChild(opt);
+        });
+
+    } catch (err) {
+        console.error(err);
+        alert("Error fetching user access");
+    }
+});
+
+/* ==================================================
+   REVOKE ACCESS SUBMIT
+================================================== */
+document.getElementById("revokeAccessForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const payload = {
+        email: email.value.trim(),
+        batch_id: batch_id.value
+    };
+
+    if (!payload.email || !payload.batch_id) {
+        alert("All fields are required");
+        return;
+    }
+
+    if (!confirm("Are you sure you want to revoke access?")) return;
+
+    const res = await fetch("/api/access/revoke", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+    if (data.success) {
+        document.getElementById("batch_id").innerHTML =
+            `<option value="">-- Select Batch --</option>`;
+    }
+});
+</script>
+
+</body>
+</html>

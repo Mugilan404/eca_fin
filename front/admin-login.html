@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elumalai's Chemistry | Login</title>
+  <link rel="stylesheet" href="student-login.css">
+  <link rel="icon" href=" " type="image/x-icon">
+</head>
+<body>
+  <!-- 🔹 Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry Academy</span>
+      </div>
+      <!-- Hamburger menu -->
+      <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="study_materials.html">Study Materials</a></li>
+        <li><a href="online_test.html">Online Test</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 🔹 Login Section -->
+  <section class="auth-container">
+    <div class="auth-box">
+      <h2>Admin Login</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="email">Email / Username</label>
+          <input type="text" id="email" name="email" placeholder="Enter your email or username" required>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="Enter your password" required>
+        </div>
+
+        <button type="submit" class="btn">Login</button>
+      </form>
+
+      <div class="auth-links">
+  <span>Don’t have an account? <a href="register.html">Register here</a></span>
+  <span>Student Login? <a href="student-login.html">Student Login here</a></span>
+</div>
+
+    </div>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+  </footer>
+
+  <script src="assets/js/main.js"></script>
+  <script>
+document.getElementById("loginForm").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  try {
+    const res = await fetch("/api/auth/admin-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Login failed");
+      return;
+    }
+
+    // ✅ Save token
+    localStorage.setItem("token", data.token);
+
+    // ✅ Redirect to admin dashboard
+    window.location.href = "admin_dashboard.html";
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error. Try again.");
+  }
+});
+</script>
+
+
+</body>
+</html>

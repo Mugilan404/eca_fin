@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Elumalai's Chemistry Academy | User Dashboard</title>
+
+  <link rel="stylesheet" href="user_dashboard.css">
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+</head>
+<body>
+
+<!-- 🔹 Header -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="user_dashboard.html" class="active">Dashboard</a></li>
+      <li><a href="study_materials.html">Study Materials</a></li>
+        <li><a href="online_test.html">Online Test</a></li>
+      <li><a href="student-login.html" id="logoutBtn">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- 🔹 Main Dashboard -->
+<main class="dashboard-container">
+
+  <!-- 📦 Accessible Batches -->
+  <section class="card">
+    <h2>My Batches</h2>
+    <div id="batchContainer" class="grid"></div>
+    <p id="batchError" class="error-msg"></p>
+  </section>
+
+  <!-- 📊 Previous Test Scores -->
+  <section class="card">
+    <h2>My Test History</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Test Name</th>
+          <th>Score</th>
+          <th>Correct</th>
+          <th>Time</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody id="scoreTable"></tbody>
+    </table>
+
+    <p id="testError" class="error-msg"></p>
+  </section>
+
+</main>
+
+<!-- 🔹 Footer -->
+<footer>
+  <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+</footer>
+
+<script>
+/* =============================
+   MOBILE MENU
+============================= */
+const menuToggle = document.getElementById("menu-toggle");
+const navLinks = document.getElementById("nav-links");
+
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("show");
+});
+
+/* =============================
+   FETCH USER BATCHES
+============================= */
+async function loadBatches() {
+  try {
+    const res = await fetch("/api/batch/my-batches", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      alert("Session expired. Please login again.");
+      localStorage.clear();
+      window.location.href = "student-login.html";
+      return;
+    }
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+    const container = document.getElementById("batchContainer");
+
+    if (data.batches.length === 0) {
+      container.innerHTML = "<p>No batches purchased yet.</p>";
+      return;
+    }
+
+    data.batches.forEach(batch => {
+      container.innerHTML += `
+        <div class="batch-card">
+          <h3>${batch.batch_name}</h3>
+          <p>Type: ${batch.batch_for}</p>
+          <p>Price: ₹${batch.batch_price}</p>
+          <button onclick="openBatch(${batch.batch_id}, '${batch.batch_for}')">View</button>
+        </div>
+      `;
+    });
+
+  } catch {
+    document.getElementById("batchError").innerText =
+      "⚠ Error loading batches. Please try again later.";
+  }
+}
+
+/* =============================
+   FETCH TEST HISTORY
+============================= */
+async function loadTestHistory() {
+  try {
+    const res = await fetch("/api/attempt/my-attempts", {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    });
+
+    if (res.status === 401 || res.status === 403) {
+      alert("Session expired. Please login again.");
+      localStorage.clear();
+      window.location.href = "student-login.html";
+      return;
+    }
+
+    if (!res.ok) throw new Error();
+
+    const data = await res.json();
+    const table = document.getElementById("scoreTable");
+
+    if (data.attempts.length === 0) {
+      table.innerHTML =
+        "<tr><td colspan='5'>No test attempts found.</td></tr>";
+      return;
+    }
+
+    data.attempts.forEach(t => {
+      table.innerHTML += `
+        <tr>
+          <td>${t.test_name}</td>
+          <td>${t.score}</td>
+          <td>${t.correct_answers}/${t.total_questions}</td>
+          <td>${t.time_taken} min</td>
+          <td>${new Date(t.submitted_at).toLocaleString()}</td>
+        </tr>
+      `;
+    });
+
+  } catch {
+    document.getElementById("testError").innerText =
+      "⚠ Error loading test history.";
+  }
+}
+
+/* =============================
+   OPEN BATCH
+============================= */
+function openBatch(batchId, type) {
+  if (type === "Materials") {
+    window.location.href = `materials.html?batch_id=${batchId}`;
+  } else if (type === "Tests") {
+    window.location.href = `testlist.html?batch_id=${batchId}`;
+  } else {
+    console.error("Invalid batch type");
+  }
+}
+
+
+/* =============================
+   LOGOUT
+============================= */
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.clear();
+});
+
+/* =============================
+   INIT
+============================= */
+loadBatches();
+loadTestHistory();
+</script>
+
+</body>
+</html>

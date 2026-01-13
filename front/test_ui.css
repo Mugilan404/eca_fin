@@ -1,0 +1,137 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.hidden {
+  display: none;
+}
+
+/* ================= Instructions Page ================= */
+.instruction-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #f5f6fa;
+}
+
+.instruction-box {
+  width: 480px;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+}
+
+.instruction-box h2 {
+  margin-bottom: 15px;
+}
+
+.instruction-box ul {
+  margin-left: 20px;
+  margin-bottom: 15px;
+}
+
+.agree {
+  display: block;
+  margin: 15px 0;
+}
+
+#startBtn {
+  width: 100%;
+  padding: 12px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}
+
+#startBtn:disabled {
+  background: #aaa;
+}
+
+/* ================= Test UI ================= */
+.test-ui {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.test-header {
+  background: #1e272e;
+  color: #fff;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.timer {
+  background: #e84118;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+/* Body */
+.test-body {
+  flex: 1;
+  display: flex;
+}
+
+/* Question Panel */
+.question-panel {
+  flex: 3;
+  padding: 30px;
+  background: #fff;
+}
+
+.options label {
+  display: block;
+  margin: 12px 0;
+}
+
+.nav-btns {
+  margin-top: 20px;
+}
+
+.nav-btns button {
+  padding: 8px 16px;
+  margin-right: 10px;
+}
+
+/* Palette */
+.palette {
+  flex: 1;
+  background: #f1f2f6;
+  padding: 20px;
+}
+
+#qPalette {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+#qPalette button {
+  padding: 8px;
+  border: none;
+  background: #dcdde1;
+  border-radius: 4px;
+}
+
+#qPalette button.active {
+  background: #44bd32;
+  color: #fff;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: #e84118;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+}

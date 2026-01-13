@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elumalai's Chemistry Academy | Home</title>
+  <link rel="stylesheet" href="home.css">
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+  <style>
+    /* Custom image size for Online Test icon */
+    .feature-card .test-image {
+      width: 140px;
+      height: auto;
+      margin: 15px auto;
+      display: block;
+    }
+
+    /* ===== Responsive Navbar ===== */
+    .menu-toggle {
+      display: none;
+      font-size: 28px;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: block;
+      }
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        background: rgba(0, 0, 0, 0.95);
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 220px;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
+      }
+      .nav-links.show {
+        display: flex;
+      }
+      .nav-links li {
+        margin: 12px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 🔹 Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry Academy</span>
+      </div>
+      <!-- Hamburger menu -->
+      <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="study_materials.html">Study Materials</a></li>
+        <li><a href="online_test.html">Online Test</a></li>
+        <li><a href="student-login.html">Account</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 🔹 Hero Section -->
+  <section class="hero" style="background-image: url('assets/images/bg_home.jpg');">
+    <div class="hero-content">
+      <h1>Welcome to ChemGuide</h1>
+      <p>Your trusted platform for Chemistry Study Materials & Online Tests.</p>
+      <a href="study_materials.html" class="btn">Explore Materials</a>
+      <a href="online_test.html" class="btn secondary">Try a Test</a>
+    </div>
+  </section>
+
+  <!-- 🔹 Quick Links -->
+  <section class="features">
+    <div class="feature-card">
+      <img src="img/book.png" alt="Study Materials">
+      <h2>Study Materials</h2>
+      <p>Access free, downloadable chemistry notes categorized for PGTRB, Polytechnic TRB, Arts & Science TRB, Engineering TRB and UGTRB.</p>
+      <a href="study_materials.html" class="btn">View Materials</a>
+    </div>
+
+    <div class="feature-card">
+      <img src="img/test.jpg" alt="Online Tests" class="test-image">
+      <h2>Online Tests</h2>
+      <p>Attempt timed tests with instant feedback, detailed explanations, and reference videos.</p>
+      <a href="online_test.html" class="btn">Start a Test</a>
+    </div>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+  </footer>
+
+  <!-- 🔹 Script for Menu Toggle -->
+  <script>
+    const menuToggle = document.getElementById("menu-toggle");
+    const navLinks = document.getElementById("nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+  </script>
+</body>
+</html>

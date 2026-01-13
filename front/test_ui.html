@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Online Test | Elumalai's Chemistry Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="test_ui.css">
+</head>
+
+<body>
+
+<!-- ================= INSTRUCTIONS PAGE ================= -->
+<section id="instructionPage" class="instruction-page">
+  <div class="instruction-box">
+    <h2>📝 Test Instructions</h2>
+
+    <ul>
+      <li>Total Questions: <span id="instTotalQ">--</span></li>
+      <li>Total Time: <span id="instTime">--</span> Minutes</li>
+      <li>No negative marking</li>
+      <li>Do not refresh or exit fullscreen</li>
+      <li>Test auto-submits on time up</li>
+    </ul>
+
+    <label class="agree">
+      <input type="checkbox" id="agreeChk">
+      I have read and understood all instructions
+    </label>
+
+    <button id="startBtn" disabled>Start Test</button>
+  </div>
+</section>
+
+<!-- ================= TEST UI ================= -->
+<section id="testUI" class="test-ui hidden">
+
+  <!-- Header -->
+  <header class="test-header">
+    <span>Elumalai's Chemistry Academy</span>
+    <span class="timer" id="timer">00:00</span>
+  </header>
+
+  <!-- Body -->
+  <div class="test-body">
+
+    <!-- Question Area -->
+    <div class="question-panel">
+      <h3 id="questionText"></h3>
+
+      <div class="options" id="options"></div>
+
+      <div class="nav-btns">
+        <button onclick="prevQ()">Previous</button>
+        <button onclick="nextQ()">Next</button>
+      </div>
+    </div>
+
+    <!-- Question Palette -->
+    <aside class="palette">
+      <h4>Questions</h4>
+      <div id="qPalette"></div>
+      <button class="submit-btn" onclick="submitTest()">Submit Test</button>
+    </aside>
+
+  </div>
+</section>
+
+<script>
+/* ================= AUTH GUARD ================= */
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "login.html";
+
+/* ================= URL PARAM ================= */
+const params = new URLSearchParams(window.location.search);
+const testId = params.get("test_id");
+if (!testId) alert("Invalid test");
+
+/* ================= STATE ================= */
+let questions = [];
+let current = 0;
+let answers = {};
+let timeLeft = 0;
+let timerInterval;
+
+/* ================= ELEMENTS ================= */
+const instructionPage = document.getElementById("instructionPage");
+const testUI = document.getElementById("testUI");
+const startBtn = document.getElementById("startBtn");
+const agreeChk = document.getElementById("agreeChk");
+
+/* ================= LOAD TEST ================= */
+async function loadTest() {
+  const res = await fetch(`/api/questions/test/${testId}`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.message);
+    return;
+  }
+
+  questions = data.questions;
+
+  document.getElementById("instTotalQ").innerText = questions.length;
+  document.getElementById("instTime").innerText = data.test_time;
+
+  timeLeft = data.test_time * 60;
+}
+
+loadTest();
+
+/* ================= START FLOW ================= */
+agreeChk.addEventListener("change", () => {
+  startBtn.disabled = !agreeChk.checked;
+});
+
+startBtn.addEventListener("click", () => {
+  enterFullscreen();
+  instructionPage.style.display = "none";
+  testUI.classList.remove("hidden");
+  loadQuestion(0);
+  startTimer();
+});
+
+/* ================= FULLSCREEN ================= */
+function enterFullscreen() {
+  if (document.documentElement.requestFullscreen)
+    document.documentElement.requestFullscreen();
+}
+
+/* ================= QUESTION RENDER ================= */
+function loadQuestion(i) {
+  current = i;
+  const q = questions[i];
+
+  document.getElementById("questionText").innerText =
+    `Q${i + 1}. ${q.question_text || ""}`;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  ["a","b","c","d"].forEach(key => {
+    const optText = q[`option_${key}_text`];
+    if (!optText) return;
+
+    const label = document.createElement("label");
+    label.innerHTML = `
+      <input type="radio" name="q_${q.question_id}" value="${key.toUpperCase()}"
+        ${answers[q.question_id] === key.toUpperCase() ? "checked" : ""}>
+      ${optText}
+    `;
+
+    label.querySelector("input").onchange = () => {
+      answers[q.question_id] = key.toUpperCase();
+      highlightPalette();
+    };
+
+    optionsDiv.appendChild(label);
+  });
+
+  highlightPalette();
+}
+
+/* ================= NAVIGATION ================= */
+function nextQ() {
+  if (current < questions.length - 1) loadQuestion(current + 1);
+}
+
+function prevQ() {
+  if (current > 0) loadQuestion(current - 1);
+}
+
+/* ================= PALETTE ================= */
+const palette = document.getElementById("qPalette");
+
+function buildPalette() {
+  palette.innerHTML = "";
+  questions.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.innerText = i + 1;
+    btn.onclick = () => loadQuestion(i);
+    palette.appendChild(btn);
+  });
+}
+
+function highlightPalette() {
+  [...palette.children].forEach((b, i) => {
+    const qId = questions[i].question_id;
+    b.className =
+      i === current ? "active" :
+      answers[qId] ? "answered" : "";
+  });
+}
+
+/* ================= TIMER ================= */
+function startTimer() {
+  timerInterval = setInterval(() => {
+    const min = Math.floor(timeLeft / 60);
+    const sec = timeLeft % 60;
+    timer.innerText = `${min}:${sec < 10 ? "0" : ""}${sec}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      submitTest();
+    }
+    timeLeft--;
+  }, 1000);
+}
+
+/* ================= SUBMIT ================= */
+function submitTest() {
+  alert("Test submitted (backend submission next step)");
+}
+
+/* ================= BLOCK EXIT ================= */
+document.addEventListener("fullscreenchange", () => {
+  if (!document.fullscreenElement) {
+    alert("Do not exit fullscreen during the test!");
+  }
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,287 @@
+/* ===== Reset & Base Styles ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: url("img/bg.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: #333;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== Navbar / Header ===== */
+header {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 12px 30px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+.logo img {
+  height: 40px;
+  margin-right: 8px;
+}
+.logo span {
+  color: #fff;
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+}
+.nav-links li {
+  margin-left: 24px;
+}
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+.nav-links a:hover,
+.nav-links .active {
+  color: #fbc531;
+}
+
+/* Mobile Nav Toggle Icon */
+.menu-toggle {
+  display: none;
+  font-size: 26px;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+/* ===== Section Containers ===== */
+section {
+  max-width: 1100px;
+  margin: 50px auto;
+  background: rgba(255, 255, 255, 0.93);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+h1, h2, h3 {
+  margin-bottom: 18px;
+  color: #222;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-block;
+  padding: 14px 28px;
+  margin: 10px 5px;
+  background: #273c75;
+  color: #fff;
+  text-decoration: none;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background 0.3s ease;
+}
+.btn:hover {
+  background: #40739e;
+}
+.btn.secondary {
+  background: #00a8ff;
+}
+.btn.secondary:hover {
+  background: #0097e6;
+}
+
+/* ===== Form Styling ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.form-group input,
+.form-group select,
+form textarea {
+  padding: 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+form button {
+  margin-top: 12px;
+}
+
+/* ===== Cards & Grids ===== */
+.features,
+.dashboard-stats {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feature-card,
+.dashboard-card {
+  flex: 1;
+  background: #fff;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 250px;
+}
+.feature-card img {
+  width: 80px;
+  margin-bottom: 20px;
+}
+
+/* ===== Tables ===== */
+.dashboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 18px;
+  overflow-x: auto;
+  display: block;
+}
+.dashboard-table th,
+.dashboard-table td {
+  padding: 14px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-size: 14px;
+}
+.dashboard-table th {
+  background: #273c75;
+  color: #fff;
+}
+.dashboard-table tr:nth-child(even) {
+  background: #f5f5f5;
+}
+
+/* ===== Lists ===== */
+ul#recent-downloads,
+ul {
+  list-style: none;
+}
+ul#recent-downloads li {
+  margin: 6px 0;
+}
+ul a {
+  text-decoration: none;
+  color: #273c75;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+ul a:hover {
+  color: #fbc531;
+}
+
+/* ===== Footer ===== */
+footer {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 3px solid #fbc531;
+  font-size: 15px;
+}
+
+/* ===== Responsive Styles ===== */
+@media (max-width: 1024px) {
+  section {
+    margin: 30px 20px;
+    padding: 25px;
+  }
+  .nav-links li {
+    margin-left: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* ✅ Show hamburger on mobile */
+  .menu-toggle {
+    display: block;
+  }
+
+  /* ✅ Hide nav links initially */
+  .nav-links {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background: rgba(0, 0, 0, 0.95);
+    flex-direction: column;
+    width: 220px;
+    display: none;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    z-index: 999;
+  }
+  .nav-links.show {
+    display: flex;
+  }
+  .nav-links li {
+    margin: 12px 0;
+  }
+
+  /* ✅ Stack cards and stats */
+  .features,
+  .dashboard-stats {
+    flex-direction: column;
+  }
+
+  /* ✅ Make section edges cleaner */
+  section {
+    margin: 20px 10px;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1, h2, h3 {
+    font-size: 20px;
+  }
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  .dashboard-table th,
+  .dashboard-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  /* ✅ Nav links full-width on very small screens */
+  .nav-links {
+    width: 220px;
+    border-radius: 0 0 10px 10px;
+  }
+}

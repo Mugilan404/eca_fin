@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>View Material | Elumalai's Chemistry Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link rel="icon" href="assets/images/logo.png" />
+  <link rel="stylesheet" href="materials_view.css" />
+
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+  <style>
+    .pdf-container {
+      max-width: 900px;
+      margin: 30px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+    }
+
+    canvas {
+      display: block;
+      margin: 20px auto;
+      width: 100%;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+
+    .warning {
+      background: #fff3cd;
+      color: #856404;
+      padding: 12px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 15px;
+      font-weight: 500;
+    }
+
+    .enroll-btn {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 10px 18px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🔹 Header (COPIED AS-IS) -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="ChemGuide Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="user_dashboard.html">Dashboard</a></li>
+      <li><a href="study_materials.html">Study Materials</a></li>
+        <li><a href="online_test.html">Online Test</a></li>
+      <li><a href="student-login.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- 🔹 Page Header -->
+<section class="page-header">
+  <h1>📄 Study Material</h1>
+  <p>PDF Viewer</p>
+</section>
+
+<!-- 🔹 PDF Section -->
+<section class="pdf-container">
+  <div id="access-message"></div>
+  <div id="pdf-viewer"></div>
+</section>
+
+<!-- 🔹 Footer (COPIED AS-IS) -->
+<footer>
+  <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+</footer>
+
+<script>
+/* =============================
+   MOBILE MENU
+============================= */
+const menuToggle = document.getElementById("menu-toggle");
+const navLinks = document.getElementById("nav-links");
+menuToggle.addEventListener("click", () => {
+  navLinks.classList.toggle("show");
+});
+
+/* =============================
+   MATERIAL VIEW LOGIC
+============================= */
+const token = localStorage.getItem("token");
+const params = new URLSearchParams(window.location.search);
+const materialId = params.get("material_id");
+
+const viewer = document.getElementById("pdf-viewer");
+const messageBox = document.getElementById("access-message");
+
+if (!materialId) {
+  viewer.innerHTML = "<p>❌ Invalid material</p>";
+  throw new Error("Material ID missing");
+}
+
+/* =============================
+   CHECK ACCESS & LOAD PDF
+============================= */
+async function checkAccess() {
+  try {
+    const res = await fetch(`/api/materials/access/${materialId}`, {
+      headers: token ? { Authorization: "Bearer " + token } : {}
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      viewer.innerHTML = "<p>❌ Unable to load material</p>";
+      return;
+    }
+
+    const hasFullAccess =
+      data.isLoggedIn === true && data.hasAccess === true;
+
+    const pageLimit = hasFullAccess ? null : 10;
+
+    if (!hasFullAccess) {
+      messageBox.innerHTML = `
+        <div class="warning">
+          🔒 You are viewing a preview (first 10 pages only).<br/>
+          <a href="enroll.html?batch_id=${data.batch_id}"
+             class="enroll-btn">
+            Enroll to Unlock Full Access
+          </a>
+        </div>
+      `;
+    }
+
+    loadPDF(data.pdfPath, pageLimit);
+
+  } catch (err) {
+    console.error(err);
+    viewer.innerHTML = "<p>❌ Error loading PDF</p>";
+  }
+}
+
+/* =============================
+   LOAD PDF USING PDF.js
+============================= */
+async function loadPDF(pdfUrl, limitPages = null) {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  const pdf = await pdfjsLib.getDocument("/" + pdfUrl).promise;
+
+  const totalPages = limitPages
+    ? Math.min(limitPages, pdf.numPages)
+    : pdf.numPages;
+
+  for (let pageNum = 1; pageNum <= totalPages; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 1.3 });
+
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+
+    await page.render({
+      canvasContext: context,
+      viewport
+    }).promise;
+
+    viewer.appendChild(canvas);
+  }
+}
+
+checkAccess();
+</script>
+
+</body>
+</html>

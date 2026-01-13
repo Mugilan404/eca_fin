@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Elumalai's Chemistry Academy | Grant Access</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="grant_access.css">
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="img/logo.png" alt="ECA Logo">
+            <span>Elumalai's Chemistry Academy</span>
+        </div>
+
+        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+        <ul class="nav-links" id="navLinks">
+            <li><a href="admin_dashboard.html">Dashboard</a></li>
+            <li><a href="create-batch.html">Create Batch</a></li>
+            <li><a class="active" href="#">Grant Access</a></li>
+            <li><a href="student-login.html">Logout</a></li>
+        </ul>
+    </nav>
+</header>
+
+<!-- ===== Grant Access Form ===== -->
+<div class="auth-container">
+    <div class="auth-box">
+        <h2>Grant Batch Access</h2>
+
+        <form id="grantAccessForm">
+
+            <!-- Email -->
+            <div class="form-group">
+                <label>Email ID</label>
+                <input type="email" id="email" placeholder="student@email.com" required>
+            </div>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="username" placeholder="Auto fetched" readonly>
+            </div>
+
+            <!-- Batch -->
+            <div class="form-group">
+                <label>Select Batch</label>
+                <select id="batch_id" required>
+                    <option value="">-- Select Batch --</option>
+                </select>
+            </div>
+
+            <!-- Batch Price -->
+            <div class="form-group">
+                <label>Batch Price (₹)</label>
+                <input type="text" id="batch_price" placeholder="Auto fetched" readonly>
+            </div>
+
+            <!-- Payment Status -->
+            <div class="form-group">
+                <label>Payment Status</label>
+                <select id="payment_status" required>
+                    <option value="PENDING">PENDING</option>
+                    <option value="SUCCESS">SUCCESS</option>
+                    <option value="FAILED">FAILED</option>
+                </select>
+            </div>
+
+            <!-- Paid Through -->
+            <div class="form-group">
+                <label>Paid Through</label>
+                <select id="paid_through" required>
+                    <option value="UPI">UPI</option>
+                    <option value="CARD">CARD</option>
+                    <option value="NET_BANKING">NET BANKING</option>
+                    <option value="CASH">CASH</option>
+                    <option value="FREE">FREE</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn">Grant Permission</button>
+        </form>
+    </div>
+</div>
+
+<!-- ===== Footer ===== -->
+<footer>
+    © 2025 Elumalai's Chemistry Academy. All Rights Reserved.
+</footer>
+
+<!-- ===== JavaScript ===== -->
+<script>
+/* ===== Mobile Menu ===== */
+function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+}
+
+/* ===== Fetch Username by Email ===== */
+document.getElementById("email").addEventListener("blur", async () => {
+    const emailInput = document.getElementById("email");
+    const usernameField = document.getElementById("username");
+
+    const email = emailInput.value.trim();
+    if (!email) return;
+
+    try {
+        const res = await fetch(`/api/users/by-email/${encodeURIComponent(email)}`);
+        const data = await res.json();
+
+        if (data.success && data.user) {
+            usernameField.value = data.user.name;
+        } else {
+            usernameField.value = "";
+            alert("User not found");
+        }
+    } catch (err) {
+        console.error("Fetch user error:", err);
+        alert("Error fetching user details");
+    }
+});
+
+
+/* ===== Load Batches ===== */
+let batchCache = {}; // store batch_id → price
+
+async function loadBatches() {
+    const batchSelect = document.getElementById("batch_id");
+    batchSelect.innerHTML = `<option value="">-- Select Batch --</option>`;
+
+    try {
+        const res = await fetch("/api/batch");
+        const batches = await res.json();
+
+        batches.forEach(batch => {
+            const option = document.createElement("option");
+            option.value = batch.batch_id;
+            option.textContent = batch.batch_name;
+
+            batchCache[batch.batch_id] = batch.batch_price; // cache price
+            batchSelect.appendChild(option);
+        });
+    } catch (err) {
+        console.error(err);
+        alert("Error loading batches");
+    }
+}
+
+/* ===== Auto Fetch Price on Batch Select ===== */
+document.getElementById("batch_id").addEventListener("change", function () {
+    const batchId = this.value;
+    document.getElementById("batch_price").value =
+        batchCache[batchId] ? `₹ ${batchCache[batchId]}` : "";
+});
+
+/* ===== Grant Access Submit ===== */
+document.getElementById("grantAccessForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const payload = {
+    email: email.value.trim(),
+    batch_id: batch_id.value,
+    payment_status: payment_status.value,
+    paid_through: paid_through.value
+  };
+
+  const res = await fetch("/api/access/grant", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  const data = await res.json();
+  alert(data.message);
+});
+
+/* ===== Init ===== */
+loadBatches();
+</script>
+
+</body>
+</html>

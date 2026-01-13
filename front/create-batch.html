@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Elumalai's Chemistry | Create Batch</title>
+  <link rel="stylesheet" href="create-batch.css"> <!-- You can rename CSS if needed -->
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+</head>
+<body>
+  <!-- 🔹 Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry Academy</span>
+      </div>
+      <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="admin_dashboard.html" class="active">Dashboard</a></li>
+        <li><a href="create-batch.html">Create Batch</a></li>
+        <li><a href="manage-batches.html">Manage Batches</a></li>
+        <li><a href="student-login.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 🔹 Create Batch Section -->
+  <section class="auth-container">
+    <div class="auth-box">
+      <h2>Create New Batch</h2>
+      <form id="createBatchForm">
+        <div class="form-group">
+          <label for="batch_name">Batch Name</label>
+          <input type="text" id="batch_name" name="batch_name" placeholder="Enter batch name" required>
+        </div>
+
+        <div class="form-group">
+          <label for="batch_for">Batch For</label>
+          <select id="batch_for" name="batch_for" required>
+            <option value="Materials">Materials</option>
+            <option value="Tests" selected>Tests</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="batch_price">Batch Price (₹)</label>
+          <input type="number" id="batch_price" name="batch_price" placeholder="Enter batch price" min="0" required>
+        </div>
+
+        <button type="submit" class="btn">Create Batch</button>
+      </form>
+
+      <div class="auth-links">
+        <span><a href="admin_dashboard.html">Back to Dashboard</a></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+  </footer>
+
+  <script>
+  document.getElementById("createBatchForm").addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const batchName = document.getElementById("batch_name").value.trim();
+    const batchFor = document.getElementById("batch_for").value;
+    const batchPrice = document.getElementById("batch_price").value;
+
+    try {
+      const response = await fetch("/api/batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          batch_name: batchName,
+          batch_for: batchFor,
+          batch_price: batchPrice
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message || "Failed to create batch");
+        return;
+      }
+
+      alert("✅ Batch created successfully!");
+      window.location.href = "admin_dashboard.html";
+
+    } catch (err) {
+      console.error(err);
+      alert("❌ Server error. Please try again.");
+    }
+  });
+
+  const menuToggle = document.getElementById("menu-toggle");
+  const navLinks = document.getElementById("nav-links");
+  menuToggle.addEventListener("click", () => {
+    navLinks.classList.toggle("show");
+  });
+</script>
+
+</body>
+</html>

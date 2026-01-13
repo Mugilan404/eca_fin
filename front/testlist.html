@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Tests | Elumalai's Chemistry Academy</title>
+
+  <link rel="stylesheet" href="materials.css" />
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+</head>
+
+<body>
+
+<!-- 🔹 Header -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="batches.html">Batches</a></li>
+      <li><a href="user_dashboard.html">Dashboard</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- 🔹 Page Header -->
+<section class="page-header">
+  <h1>🧪 Online Tests</h1>
+  <p>Available tests for this batch</p>
+</section>
+
+<!-- 🔹 Tests Section -->
+<section class="materials-section">
+  <div id="materials-list" class="materials-list">
+    <p>Loading Tests...</p>
+  </div>
+</section>
+
+<!-- 🔹 Footer -->
+<footer>
+  <p>© 2025 Elumalai's Chemistry Academy</p>
+</footer>
+
+<!-- 🔹 Script -->
+<script>
+/* 🔐 LOGIN GUARD */
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "login.html";
+}
+
+/* 🔎 Get batch_id */
+const params = new URLSearchParams(window.location.search);
+const batchId = params.get("batch_id");
+const container = document.getElementById("materials-list");
+
+if (!batchId) {
+  container.innerHTML = "<p>❌ Invalid batch selected.</p>";
+} else {
+  loadTests();
+}
+
+async function loadTests() {
+  try {
+    const res = await fetch(`/api/tests/batch/${batchId}`, {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+    container.innerHTML = "";
+
+    if (!data.success || !data.tests || data.tests.length === 0) {
+      container.innerHTML = "<p>No tests available for this batch.</p>";
+      return;
+    }
+
+    data.tests.forEach(test => {
+      const hasAccess = test.has_access === true;
+
+      const card = document.createElement("div");
+      card.className = "material-card";
+
+      const btnText = hasAccess ? "✍️ Write Test" : "🔒 Enroll";
+      const btnLink = hasAccess
+        ? `test_ui.html?test_id=${test.test_id}`
+        : `enroll.html?batch_id=${batchId}`;
+
+      card.innerHTML = `
+        <h3>${test.test_name}</h3>
+        <span class="category">${test.test_category}</span>
+
+        <p class="date">
+          ⏱ Duration: ${test.test_time} mins<br>
+          🧮 Questions: ${test.total_questions}<br>
+          📅 ${new Date(test.created_at).toLocaleDateString()}
+        </p>
+
+        <a href="${btnLink}" class="btn ${hasAccess ? '' : 'locked'}">
+          ${btnText}
+        </a>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    container.innerHTML = "<p>❌ Error loading tests.</p>";
+  }
+}
+</script>
+
+</body>
+</html>

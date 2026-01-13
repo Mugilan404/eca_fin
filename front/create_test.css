@@ -1,0 +1,200 @@
+/* ===== Reset & Base Styles ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: url('img/bg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    min-height: 100vh;
+    color: #333;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* ===== Header & Navbar ===== */
+header {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+.logo img {
+    height: 40px;
+    margin-right: 8px;
+}
+.logo span {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+.nav-links li {
+    margin-left: 24px;
+}
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.nav-links a:hover,
+.nav-links .active {
+    color: #fbc531;
+}
+
+/* Mobile Nav Toggle Icon */
+.menu-toggle {
+    display: none;
+    font-size: 26px;
+    color: #fff;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+/* ===== Create Batch Form Container ===== */
+.auth-container {
+    max-width: 450px;
+    margin: 60px auto;
+    padding: 25px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    border-radius: 12px;
+}
+
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+}
+
+/* ===== Form Styling ===== */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input,
+.form-group select {
+    padding: 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+button.btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+button.btn:hover {
+    background-color: #0056b3;
+}
+
+/* ===== Auth Links ===== */
+.auth-links {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.auth-links a {
+    color: #007bff;
+    text-decoration: none;
+    margin: 0 5px;
+}
+.auth-links a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Footer ===== */
+
+footer {
+  text-align: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 15px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  border-top: 3px solid #fbc531;
+  font-size: 15px;
+}
+
+/* ===== Responsive Styles ===== */
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        right: 0;
+        top: 60px;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        width: 220px;
+        display: none;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
+        z-index: 999;
+    }
+
+    .nav-links.show {
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 12px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        margin: 30px 15px;
+        padding: 20px;
+    }
+
+    .form-group input,
+    .form-group select {
+        font-size: 14px;
+    }
+
+    button.btn {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

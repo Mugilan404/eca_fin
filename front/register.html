@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elumalai's Chemistry | Register</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="register.css" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon" />
+</head>
+<body>
+
+  <!-- 🔹 Header -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry</span>
+      </div>
+
+      <!-- Hamburger -->
+      <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="study_materials.html">Study Materials</a></li>
+        <li><a href="online_test.html">Online Test</a></li>
+        <li><a href="student-login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- 🔹 Register Section -->
+  <section class="auth-container">
+    <div class="auth-box">
+      <h2>Create a New Account</h2>
+
+      <!-- 🔥 NO action, NO method -->
+      <form id="registerForm">
+
+        <!-- Full Name -->
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" placeholder="Enter your full name" required>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+        </div>
+
+        <!-- Contact -->
+        <div class="form-group">
+          <label for="contact">Contact Number</label>
+          <input type="text" id="contact" placeholder="Enter your contact number" required>
+        </div>
+
+        <!-- Designation -->
+        <div class="form-group">
+          <label for="designation">Designation</label>
+          <input type="text" id="designation" placeholder="Student / Teacher" required>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Enter password" required>
+        </div>
+
+        <!-- Repeat Password -->
+        <div class="form-group">
+          <label for="repeat-password">Repeat Password</label>
+          <input type="password" id="repeat-password" placeholder="Repeat password" required>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn">Register</button>
+      </form>
+
+      <div class="links">
+        <a href="student-login.html">Already have an account? Login</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🔹 Footer -->
+  <footer>
+    <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+  </footer>
+
+  <!-- 🔹 Scripts -->
+  <script>
+    /* Mobile Menu */
+    const menuToggle = document.getElementById("menu-toggle");
+    const navLinks = document.getElementById("nav-links");
+
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+
+    /* Registration */
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+      const designation = document.getElementById("designation").value.trim();
+      const password = document.getElementById("password").value;
+      const repeatPassword = document.getElementById("repeat-password").value;
+
+      if (password !== repeatPassword) {
+        alert("❌ Passwords do not match");
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name,
+            email,
+            contact_no: contact,
+            designation,
+            password
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || "Registration failed");
+          return;
+        }
+
+        alert("✅ Account created successfully!");
+        window.location.href = "student-login.html";
+
+      } catch (err) {
+        console.error(err);
+        alert("❌ Server error. Please try again.");
+      }
+    });
+  </script>
+
+</body>
+</html>

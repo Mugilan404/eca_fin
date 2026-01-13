@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elumalai's Chemistry Academy | Study Materials</title>
+
+  <link rel="stylesheet" href="study_materials.css" />
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon" />
+
+  <style>
+    .batches-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin: 30px;
+    }
+
+    .batch-card {
+      background: #fff;
+      padding: 22px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .batch-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .batch-card h3 {
+      margin-bottom: 10px;
+      color: #2c3e50;
+    }
+
+    .batch-card p {
+      margin: 6px 0;
+      color: #555;
+    }
+
+    .price {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #27ae60;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 10px 16px;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🔹 Header -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Logo" />
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="study_materials.html" class="active">Study Materials</a></li>
+      <li><a href="online_test.html">Online Tests</a></li>
+      <li><a href="student-login.html">Account</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- 🔹 Hero -->
+<section class="hero" style="background-image: url('assets/images/bg_batches.jpg');">
+  <div class="hero-content">
+    <h1>📚 Study Material Batches</h1>
+    <p>Choose a batch and start learning</p>
+    <a href="#batches-section" class="btn">View Batches</a>
+  </div>
+</section>
+
+<!-- 🔹 Batches Section -->
+<section id="batches-section">
+  <div id="batches-grid" class="batches-grid">
+    <p>Loading batches...</p>
+  </div>
+</section>
+
+<!-- 🔹 Footer -->
+<footer>
+  <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+</footer>
+
+<!-- 🔹 JavaScript -->
+<script>
+/* =============================
+   LOAD MATERIAL BATCHES
+============================= */
+async function loadMaterialBatches() {
+  const grid = document.getElementById("batches-grid");
+  grid.innerHTML = "<p>Loading batches...</p>";
+
+  try {
+    const res = await fetch("/api/batch/materials");
+
+    if (!res.ok) throw new Error("Failed to fetch batches");
+
+    const data = await res.json();
+    console.log("Materials API:", data);
+
+    if (!data.success || data.batches.length === 0) {
+      grid.innerHTML = "<p>No study material batches available.</p>";
+      return;
+    }
+
+    grid.innerHTML = "";
+
+    data.batches.forEach(batch => {
+      const card = document.createElement("div");
+      card.className = "batch-card";
+
+      card.innerHTML = `
+        <h3>${batch.batch_name}</h3>
+        <p><strong>Type:</strong> ${batch.batch_for}</p>
+        <p class="price">₹ ${batch.batch_price}</p>
+        <a href="materials.html?batch_id=${batch.batch_id}" class="btn">
+          View Materials
+        </a>
+      `;
+
+      grid.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = "<p>❌ Error loading batches.</p>";
+  }
+}
+
+/* =============================
+   MOBILE MENU
+============================= */
+document.getElementById("menu-toggle").addEventListener("click", () => {
+  document.getElementById("nav-links").classList.toggle("show");
+});
+
+/* =============================
+   INIT
+============================= */
+loadMaterialBatches();
+</script>
+
+</body>
+</html>

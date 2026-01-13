@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batch Materials | Elumalai's Chemistry Academy</title>
+
+  <link rel="stylesheet" href="materials.css" />
+  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+</head>
+
+<body>
+
+<!-- 🔹 Header -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="batches.html">Batches</a></li>
+      <li><a href="user_dashboard.html">Dashboard</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- 🔹 Page Header -->
+<section class="page-header">
+  <h1>📚 Study Materials</h1>
+  <p>Materials available for this batch</p>
+</section>
+
+<!-- 🔹 Materials Section -->
+<section class="materials-section">
+  <div id="materials-list" class="materials-list">
+    <p>Loading materials...</p>
+  </div>
+</section>
+
+<!-- 🔹 Footer -->
+<footer>
+  <p>© 2025 Elumalai's Chemistry Academy</p>
+</footer>
+
+<!-- 🔹 Script -->
+<script>
+const params = new URLSearchParams(window.location.search);
+const batchId = params.get("batch_id");
+const container = document.getElementById("materials-list");
+
+if (!batchId) {
+  container.innerHTML = "<p>❌ Invalid batch selected.</p>";
+} else {
+  loadMaterials();
+}
+
+async function loadMaterials() {
+  try {
+    const res = await fetch(`/api/materials/batch/${batchId}`);
+    const data = await res.json();
+
+    container.innerHTML = "";
+
+    if (!data.success || data.materials.length === 0) {
+      container.innerHTML =
+        "<p>No study materials available for this batch yet.</p>";
+      return;
+    }
+
+    data.materials.forEach(mat => {
+      const card = document.createElement("div");
+      card.className = "material-card";
+
+      card.innerHTML = `
+        <h3>${mat.material_name}</h3>
+        <span class="category">${mat.material_category}</span>
+        <p class="date">
+          Uploaded on ${new Date(mat.created_at).toLocaleDateString()}
+        </p>
+        <a href="materials_view.html?material_id=${mat.material_id}"
+           class="btn">
+          📄 View Material
+        </a>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    container.innerHTML = "<p>❌ Error loading materials.</p>";
+  }
+}
+</script>
+
+
+</body>
+</html>
