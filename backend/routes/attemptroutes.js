@@ -11,4 +11,11 @@ router.post(
   attemptcontroller.startAttempt
 );
 
+/* ===== GET MY TEST ATTEMPTS ===== */
+router.get(
+  "/my-attempts",
+  authmiddleware,
+  attemptcontroller.getMyAttempts
+);
+
 module.exports = router;

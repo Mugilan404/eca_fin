@@ -209,9 +209,32 @@ function startTimer() {
 }
 
 /* ================= SUBMIT ================= */
-function submitTest() {
-  alert("Test submitted (backend submission next step)");
+async function submitTest() {
+  clearInterval(timerInterval);
+
+  const res = await fetch("/api/tests/submit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token
+    },
+    body: JSON.stringify({
+      test_id: testId,
+      answers
+    })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+    alert("Submission failed");
+    return;
+  }
+
+  // 🔁 Redirect to result page
+  window.location.href = `results.html?attempt_id=${data.attempt_id}`;
 }
+
 
 /* ================= BLOCK EXIT ================= */
 document.addEventListener("fullscreenchange", () => {

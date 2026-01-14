@@ -20,4 +20,18 @@ router.post(
 
 router.get("/batch/:batchId", authMiddleware, testController.getTestsByBatch);
 
+/* ===== SUBMIT TEST ===== */
+router.post(
+  "/submit",
+  authMiddleware,
+  testController.submitTest
+);
+
+/* ===== GET TEST RESULT ===== */
+router.get(
+  "/result/:attemptId",
+  authMiddleware,
+  testController.getResult
+);
+
 module.exports = router;

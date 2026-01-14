@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Result | Elumalai's Chemistry Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+    }
+
+    header {
+      background: #1e293b;
+      color: #fff;
+      padding: 15px 25px;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 300px auto;
+      gap: 30px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+
+    .chart-box {
+      text-align: center;
+    }
+
+    .chart-box h3 {
+      margin-bottom: 10px;
+    }
+
+    .info h2 {
+      margin: 0 0 10px;
+    }
+
+    .info p {
+      margin: 6px 0;
+      color: #555;
+    }
+
+    .question-card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+
+    .question-card h4 {
+      margin-bottom: 10px;
+    }
+
+    .option {
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+    }
+
+    .correct {
+      background: #dcfce7;
+      border-color: #22c55e;
+    }
+
+    .wrong {
+      background: #fee2e2;
+      border-color: #ef4444;
+    }
+
+    .chosen {
+      font-weight: bold;
+    }
+
+    .reference {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .reference a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      color: #777;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  🧪 Elumalai's Chemistry Academy — Test Result
+</header>
+
+<div class="container">
+
+  <!-- ===== SUMMARY ===== -->
+  <div class="summary">
+    <div class="chart-box">
+      <h3>Score</h3>
+      <canvas id="resultChart" width="250" height="140"></canvas>
+      <p><strong id="scoreText"></strong></p>
+    </div>
+
+    <div class="info">
+      <h2 id="testName">Loading...</h2>
+      <p>Total Questions: <span id="totalQ"></span></p>
+      <p>Correct Answers: <span id="correctQ"></span></p>
+      <p>Attempted On: <span id="attemptDate"></span></p>
+    </div>
+  </div>
+
+  <!-- ===== QUESTIONS REVIEW ===== -->
+  <div id="questionsContainer"></div>
+
+</div>
+
+<footer>
+  © 2025 Elumalai's Chemistry Academy
+</footer>
+
+<script>
+/* ================= AUTH ================= */
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "login.html";
+
+/* ================= PARAM ================= */
+const params = new URLSearchParams(window.location.search);
+const attemptId = params.get("attempt_id");
+if (!attemptId) alert("Invalid attempt");
+
+/* ================= LOAD RESULT ================= */
+async function loadResult() {
+  const res = await fetch(`/api/tests/result/${attemptId}`, {
+    headers: { Authorization: "Bearer " + token }
+  });
+
+  const data = await res.json();
+  if (!data.success) {
+    alert(data.message);
+    return;
+  }
+
+  const r = data.result;
+
+  /* ===== SUMMARY ===== */
+  document.getElementById("testName").innerText = r.test_name;
+  document.getElementById("totalQ").innerText = r.total_questions;
+  document.getElementById("correctQ").innerText = r.correct_answers;
+  document.getElementById("attemptDate").innerText =
+    new Date(r.completed_at).toLocaleString();
+
+  document.getElementById("scoreText").innerText =
+    `${r.score} / ${r.total_questions}`;
+
+  buildChart(
+    r.score,
+    r.total_questions - r.score
+  );
+
+  /* ===== QUESTIONS ===== */
+  const qc = document.getElementById("questionsContainer");
+
+  r.questions.forEach((q, i) => {
+    const div = document.createElement("div");
+    div.className = "question-card";
+
+    div.innerHTML = `
+      <h4>Q${i + 1}. ${q.question_text}</h4>
+
+      ${renderOption("A", q.option_a_text, q)}
+      ${renderOption("B", q.option_b_text, q)}
+      ${renderOption("C", q.option_c_text, q)}
+      ${renderOption("D", q.option_d_text, q)}
+
+      ${
+        q.reference_link
+          ? `<div class="reference">📘 Reference:
+              <a href="${q.reference_link}" target="_blank">
+                ${q.reference_link}
+              </a>
+            </div>`
+          : ""
+      }
+    `;
+
+    qc.appendChild(div);
+  });
+}
+
+/* ================= OPTION RENDER ================= */
+function renderOption(letter, text, q) {
+  if (!text) return "";
+
+  let cls = "option";
+  if (q.correct_option === letter) cls += " correct";
+  if (q.selected_option === letter && q.correct_option !== letter)
+    cls += " wrong";
+  if (q.selected_option === letter) cls += " chosen";
+
+  return `<div class="${cls}">${letter}. ${text}</div>`;
+}
+
+/* ================= CHART ================= */
+function buildChart(correct, wrong) {
+  new Chart(document.getElementById("resultChart"), {
+    type: "doughnut",
+    data: {
+      labels: ["Correct", "Wrong"],
+      datasets: [{
+        data: [correct, wrong],
+        backgroundColor: ["#22c55e", "#ef4444"]
+      }]
+    },
+    options: {
+      rotation: -90,
+      circumference: 180,
+      cutout: "70%",
+      plugins: { legend: { display: false } }
+    }
+  });
+}
+
+loadResult();
+</script>
+
+</body>
+</html>
