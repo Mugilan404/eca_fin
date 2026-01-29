@@ -1,167 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Elumalai's Chemistry Academy | Grant Access</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="grant_access.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grant Access</title>
+<link rel="stylesheet" href="online_test.css">
+
+<style>
+/* ===== Base Layout ===== */
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #f4f6f8;
+  color: #333;
+}
+
+header {
+  background: #003366;
+  color: #fff;
+  padding: 14px 30px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 22px;
+}
+
+footer {
+  background: #003366;
+  color: #fff;
+  text-align: center;
+  padding: 14px;
+  margin-top: 40px;
+  font-size: 14px;
+}
+
+/* ===== Form Container ===== */
+.page-container {
+  max-width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #003366;
+  text-align: center;
+}
+
+form label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+form input,
+form select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+button {
+  margin-top: 22px;
+  width: 100%;
+  padding: 12px;
+  background: #003366;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+/* ===== Payment Proof ===== */
+#proofSection {
+  margin-top: 20px;
+  padding: 12px;
+  background: #eef3f8;
+  border-radius: 6px;
+}
+
+#proofSection h4 {
+  margin: 0 0 6px;
+}
+
+#proofLink {
+  color: #0056b3;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* ===============================
+   MOBILE OPTIMIZATION
+   =============================== */
+@media (max-width: 768px) {
+
+  header {
+    padding: 12px 16px;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 18px;
+  }
+
+  .page-container {
+    margin: 20px 12px;
+    padding: 20px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  form label {
+    font-size: 14px;
+  }
+
+  form input,
+  form select {
+    font-size: 14px;
+    padding: 9px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 11px;
+  }
+
+  footer {
+    font-size: 13px;
+    padding: 12px;
+  }
+}
+</style>
 </head>
 <body>
 
-<!-- ===== Header ===== -->
 <header>
-    <nav class="navbar">
-        <div class="logo">
-            <img src="img/logo.png" alt="ECA Logo">
-            <span>Elumalai's Chemistry Academy</span>
-        </div>
-
-        <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-
-        <ul class="nav-links" id="navLinks">
-            <li><a href="admin_dashboard.html">Dashboard</a></li>
-            <li><a href="create-batch.html">Create Batch</a></li>
-            <li><a class="active" href="#">Grant Access</a></li>
-            <li><a href="student-login.html">Logout</a></li>
-        </ul>
-    </nav>
+  <h1>Admin Panel – Grant Batch Access</h1>
 </header>
 
-<!-- ===== Grant Access Form ===== -->
-<div class="auth-container">
-    <div class="auth-box">
-        <h2>Grant Batch Access</h2>
+<div class="page-container">
+  <h2>Grant Batch Access</h2>
 
-        <form id="grantAccessForm">
+  <form id="grantAccessForm">
 
-            <!-- Email -->
-            <div class="form-group">
-                <label>Email ID</label>
-                <input type="email" id="email" placeholder="student@email.com" required>
-            </div>
+    <input type="hidden" id="enroll_id">
 
-            <!-- Username -->
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="username" placeholder="Auto fetched" readonly>
-            </div>
+    <label>Email</label>
+    <input type="email" id="email" readonly>
 
-            <!-- Batch -->
-            <div class="form-group">
-                <label>Select Batch</label>
-                <select id="batch_id" required>
-                    <option value="">-- Select Batch --</option>
-                </select>
-            </div>
+    <label>Username</label>
+    <input type="text" id="username" readonly>
 
-            <!-- Batch Price -->
-            <div class="form-group">
-                <label>Batch Price (₹)</label>
-                <input type="text" id="batch_price" placeholder="Auto fetched" readonly>
-            </div>
+    <label>Batch</label>
+    <select id="batch_id" disabled></select>
 
-            <!-- Payment Status -->
-            <div class="form-group">
-                <label>Payment Status</label>
-                <select id="payment_status" required>
-                    <option value="PENDING">PENDING</option>
-                    <option value="SUCCESS">SUCCESS</option>
-                    <option value="FAILED">FAILED</option>
-                </select>
-            </div>
+    <label>Batch Price</label>
+    <input type="text" id="batch_price" readonly>
 
-            <!-- Paid Through -->
-            <div class="form-group">
-                <label>Paid Through</label>
-                <select id="paid_through" required>
-                    <option value="UPI">UPI</option>
-                    <option value="CARD">CARD</option>
-                    <option value="NET_BANKING">NET BANKING</option>
-                    <option value="CASH">CASH</option>
-                    <option value="FREE">FREE</option>
-                </select>
-            </div>
+    <label>Payment Status</label>
+    <select id="payment_status">
+      <option value="PENDING">PENDING</option>
+      <option value="SUCCESS">SUCCESS</option>
+      <option value="FAILED">FAILED</option>
+    </select>
 
-            <button type="submit" class="btn">Grant Permission</button>
-        </form>
+    <label>Paid Through</label>
+    <select id="paid_through">
+      <option value="UPI">UPI</option>
+      <option value="CARD">CARD</option>
+      <option value="NET_BANKING">NET BANKING</option>
+      <option value="CASH">CASH</option>
+    </select>
+
+    <div id="proofSection">
+      <h4>Payment Proof</h4>
+      <a id="proofLink" target="_blank">View Payment Proof</a>
     </div>
+
+    <button type="submit">Grant Access</button>
+  </form>
 </div>
 
-<!-- ===== Footer ===== -->
 <footer>
-    © 2025 Elumalai's Chemistry Academy. All Rights Reserved.
+  © 2026 Elumalai's Chemistry Academy. All rights reserved.
 </footer>
 
-<!-- ===== JavaScript ===== -->
 <script>
-/* ===== Mobile Menu ===== */
-function toggleMenu() {
-    document.getElementById("navLinks").classList.toggle("show");
+const params = new URLSearchParams(window.location.search);
+const enrollId = params.get("enroll_id");
+
+async function loadEnrollData() {
+  const res = await fetch(`/api/enroll/${enrollId}`);
+  const { success, data } = await res.json();
+
+  if (!success) {
+    alert("Invalid enrollment");
+    return;
+  }
+
+  enroll_id.value = data.enroll_id;
+  email.value = data.email;
+  username.value = data.username;
+  batch_id.innerHTML = `<option value="${data.batch_id}">
+    ${data.batch_name}
+  </option>`;
+  batch_price.value = `₹ ${data.batch_price}`;
+  payment_status.value = data.payment_status;
+  paid_through.value = data.paid_through;
+
+  if (data.payment_proof) {
+    proofLink.href = `/uploads/${data.payment_proof}`;
+    proofLink.textContent = "View Payment Proof";
+  } else {
+    proofSection.style.display = "none";
+  }
 }
 
-/* ===== Fetch Username by Email ===== */
-document.getElementById("email").addEventListener("blur", async () => {
-    const emailInput = document.getElementById("email");
-    const usernameField = document.getElementById("username");
-
-    const email = emailInput.value.trim();
-    if (!email) return;
-
-    try {
-        const res = await fetch(`/api/users/by-email/${encodeURIComponent(email)}`);
-        const data = await res.json();
-
-        if (data.success && data.user) {
-            usernameField.value = data.user.name;
-        } else {
-            usernameField.value = "";
-            alert("User not found");
-        }
-    } catch (err) {
-        console.error("Fetch user error:", err);
-        alert("Error fetching user details");
-    }
-});
-
-
-/* ===== Load Batches ===== */
-let batchCache = {}; // store batch_id → price
-
-async function loadBatches() {
-    const batchSelect = document.getElementById("batch_id");
-    batchSelect.innerHTML = `<option value="">-- Select Batch --</option>`;
-
-    try {
-        const res = await fetch("/api/batch");
-        const batches = await res.json();
-
-        batches.forEach(batch => {
-            const option = document.createElement("option");
-            option.value = batch.batch_id;
-            option.textContent = batch.batch_name;
-
-            batchCache[batch.batch_id] = batch.batch_price; // cache price
-            batchSelect.appendChild(option);
-        });
-    } catch (err) {
-        console.error(err);
-        alert("Error loading batches");
-    }
-}
-
-/* ===== Auto Fetch Price on Batch Select ===== */
-document.getElementById("batch_id").addEventListener("change", function () {
-    const batchId = this.value;
-    document.getElementById("batch_price").value =
-        batchCache[batchId] ? `₹ ${batchCache[batchId]}` : "";
-});
-
-/* ===== Grant Access Submit ===== */
 document.getElementById("grantAccessForm").addEventListener("submit", async e => {
   e.preventDefault();
 
   const payload = {
-    email: email.value.trim(),
+    enroll_id: enroll_id.value,
+    email: email.value,
     batch_id: batch_id.value,
     payment_status: payment_status.value,
     paid_through: paid_through.value
@@ -175,10 +249,13 @@ document.getElementById("grantAccessForm").addEventListener("submit", async e =>
 
   const data = await res.json();
   alert(data.message);
+
+  if (data.success) {
+    window.location.href = "admin_dashboard.html";
+  }
 });
 
-/* ===== Init ===== */
-loadBatches();
+loadEnrollData();
 </script>
 
 </body>

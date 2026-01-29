@@ -2,110 +2,144 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Elumalai's Chemistry Academy | Home</title>
+  <title>Elumalai Chemistry Academy</title>
   <link rel="stylesheet" href="home.css">
-  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
-  <style>
-    /* Custom image size for Online Test icon */
-    .feature-card .test-image {
-      width: 140px;
-      height: auto;
-      margin: 15px auto;
-      display: block;
-    }
-
-    /* ===== Responsive Navbar ===== */
-    .menu-toggle {
-      display: none;
-      font-size: 28px;
-      color: #fff;
-      cursor: pointer;
-    }
-
-    @media (max-width: 768px) {
-      .menu-toggle {
-        display: block;
-      }
-      .nav-links {
-        display: none;
-        flex-direction: column;
-        background: rgba(0, 0, 0, 0.95);
-        position: absolute;
-        top: 60px;
-        right: 0;
-        width: 220px;
-        padding: 20px;
-        border-radius: 0 0 10px 10px;
-      }
-      .nav-links.show {
-        display: flex;
-      }
-      .nav-links li {
-        margin: 12px 0;
-      }
-    }
-  </style>
 </head>
 <body>
-  <!-- 🔹 Header -->
+
+ 
+  <!-- Header -->
   <header>
-    <nav class="navbar">
-      <div class="logo">
-        <img src="assets/images/logo.png" alt="ChemGuide Logo">
-        <span>Elumalai's Chemistry Academy</span>
-      </div>
-      <!-- Hamburger menu -->
-      <span class="menu-toggle" id="menu-toggle">&#9776;</span>
-      <ul class="nav-links" id="nav-links">
-        <li><a href="index.html" class="active">Home</a></li>
-        <li><a href="study_materials.html">Study Materials</a></li>
-        <li><a href="online_test.html">Online Test</a></li>
-        <li><a href="student-login.html">Account</a></li>
-      </ul>
-    </nav>
-  </header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="assets/images/logo.png" alt="Logo" />
+      <span>Elumalai's Chemistry Academy</span>
+          </div>
 
-  <!-- 🔹 Hero Section -->
-  <section class="hero" style="background-image: url('assets/images/bg_home.jpg');">
-    <div class="hero-content">
-      <h1>Welcome to ChemGuide</h1>
-      <p>Your trusted platform for Chemistry Study Materials & Online Tests.</p>
-      <a href="study_materials.html" class="btn">Explore Materials</a>
-      <a href="online_test.html" class="btn secondary">Try a Test</a>
-    </div>
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="home.html" class="active">Home</a></li>
+      <li><a href="study_materials.html" >Study Materials</a></li>
+      <li><a href="online_test.html">Online Tests</a></li>
+      <li><a href="student-login.html">Account</a></li>
+    </ul>
+  </nav>
+</header>
+   <!-- 🔔 Sliding Notifications -->
+  <div class="notification-bar">
+    <marquee id="topNotifications" behavior="scroll" direction="left"></marquee>
+  </div>
+
+  <!-- About Section -->
+  <section class="about">
+    <p>
+      <strong>Elumalai Chemistry Academy</strong> provides focused coaching for
+      <strong>TN-TRB Chemistry</strong> aspirants with deep conceptual teaching,
+      PYQ-based training, and continuous evaluation to ensure success.
+    </p>
   </section>
 
-  <!-- 🔹 Quick Links -->
+  <!-- Teaching Approach -->
+  <section class="approach">
+    <h2>📘 Our Teaching Approach</h2>
+    <ul>
+      <li>Conceptual teaching from basics to TRB level</li>
+      <li>Exam-oriented notes (simple language, high retention)</li>
+      <li>Continuous Assessment Test – Every week (20 MCQs)</li>
+      <li>Previous Year Question (PYQ) analysis</li>
+      <li>MCQs practice</li>
+      <li>Short tricks where applicable (without losing concepts)</li>
+      <li>Repeated revision cycles</li>
+      <li>Printed / PDF Notes (TRB-focused)</li>
+      <li>Concept maps & flow charts</li>
+      <li>Chapter-wise MCQs</li>
+      <li>Model question papers</li>
+    </ul>
+  </section>
+
+  <!-- Course Features -->
   <section class="features">
-    <div class="feature-card">
-      <img src="img/book.png" alt="Study Materials">
-      <h2>Study Materials</h2>
-      <p>Access free, downloadable chemistry notes categorized for PGTRB, Polytechnic TRB, Arts & Science TRB, Engineering TRB and UGTRB.</p>
-      <a href="study_materials.html" class="btn">View Materials</a>
-    </div>
-
-    <div class="feature-card">
-      <img src="img/test.jpg" alt="Online Tests" class="test-image">
-      <h2>Online Tests</h2>
-      <p>Attempt timed tests with instant feedback, detailed explanations, and reference videos.</p>
-      <a href="online_test.html" class="btn">Start a Test</a>
+    <h2>⭐ Course Features</h2>
+    <div class="feature-grid">
+      <div>🎯 TN-TRB focused preparation</div>
+      <div>📚 Updated syllabus coverage</div>
+      <div>🧩 Concept clarity + exam strategy</div>
+      <div>📝 Regular tests & feedback</div>
+      <div>🔁 Multiple revisions before exam</div>
+      <div>💬 Doubt-clearing sessions</div>
     </div>
   </section>
 
-  <!-- 🔹 Footer -->
-  <footer>
-    <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+  <!-- Notifications List -->
+  <section class="notifications">
+    <h2>📢 Latest Notifications</h2>
+    <ul id="notificationList"></ul>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 Elumalai Chemistry Academy | All Rights Reserved</p>
   </footer>
 
-  <!-- 🔹 Script for Menu Toggle -->
-  <script>
-    const menuToggle = document.getElementById("menu-toggle");
-    const navLinks = document.getElementById("nav-links");
+  <!-- JS -->
+<script>
+  document.getElementById("menu-toggle").addEventListener("click", () => {
+  document.getElementById("nav-links").classList.toggle("show");
+});
+  /* ===============================
+     TOP 3 NOTIFICATIONS (SLIDER)
+  =============================== */
+  fetch("/api/notifications/top3")
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) return;
 
-    menuToggle.addEventListener("click", () => {
-      navLinks.classList.toggle("show");
-    });
-  </script>
+      const container = document.getElementById("topNotifications");
+
+      if (!data.notifications.length) {
+        container.innerHTML = "<span>No notifications</span>";
+        return;
+      }
+
+      container.innerHTML = data.notifications
+        .map(n => `
+          <a href="${n.url || '#'}" target="_blank">
+            ${n.description}
+          </a>
+        `)
+        .join(" | ");
+    })
+    .catch(err => console.error("Top 3 fetch error:", err));
+
+
+  /* ===============================
+     TOP 10 NOTIFICATIONS (LIST)
+  =============================== */
+  fetch("/api/notifications/top10")
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) return;
+
+      const list = document.getElementById("notificationList");
+
+      if (!data.notifications.length) {
+        list.innerHTML = "<li>No notifications available</li>";
+        return;
+      }
+
+      list.innerHTML = data.notifications
+        .map(n => `
+          <li>
+            <a href="${n.url || '#'}" target="_blank">
+              ${n.description}
+            </a>
+          </li>
+        `)
+        .join("");
+    })
+    .catch(err => console.error("Top 10 fetch error:", err));
+</script>
+
 </body>
 </html>

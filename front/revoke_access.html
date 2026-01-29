@@ -64,7 +64,7 @@
 
 <!-- ===== Footer ===== -->
 <footer>
-    © 2025 Elumalai's Chemistry Academy. All Rights Reserved.
+    © 2026 Elumalai's Chemistry Academy. All Rights Reserved.
 </footer>
 
 <script>
@@ -97,10 +97,10 @@ document.getElementById("email").addEventListener("blur", async () => {
         }
 
         usernameField.value = userData.user.name;
-
+        console.log(userData.user.email);
         /* ---- Fetch User Accessible Batches ---- */
         const batchRes = await fetch(
-            `/api/batch/user-batches?email=${encodeURIComponent(email)}`
+            `/api/batch/user-batches/${encodeURIComponent(userData.user.email)}`
         );
         const batchData = await batchRes.json();
 
@@ -127,10 +127,14 @@ document.getElementById("email").addEventListener("blur", async () => {
 ================================================== */
 document.getElementById("revokeAccessForm").addEventListener("submit", async e => {
     e.preventDefault();
-
+    console.log("Revoke Access form submitted");
+    const emailInput = document.getElementById("email");
+    const batchSelect = document.getElementById("batch_id");
+    console.log("Email:", emailInput.value);
+    console.log("Batch ID:", batchSelect.value);
     const payload = {
-        email: email.value.trim(),
-        batch_id: batch_id.value
+        email: emailInput.value.trim(),
+        batch_id: batchSelect.value
     };
 
     if (!payload.email || !payload.batch_id) {
@@ -139,16 +143,17 @@ document.getElementById("revokeAccessForm").addEventListener("submit", async e =
     }
 
     if (!confirm("Are you sure you want to revoke access?")) return;
-
-    const res = await fetch("/api/access/revoke", {
+    console.log("Confirmed revocation");
+    const res = await fetch("/api/batch/revoke", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
     });
-
+    console.log("Revoke request sent");
     const data = await res.json();
     alert(data.message);
-
+    window.location.href = "admin_dashboard.html";
+    console.log("Revoke response received:", data);
     if (data.success) {
         document.getElementById("batch_id").innerHTML =
             `<option value="">-- Select Batch --</option>`;

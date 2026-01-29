@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Elumalai's Chemistry Academy | Upload Question Images</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="grant_access.css">
+</head>
+
+<body>
+
+<!-- ===== AUTH GUARD ===== -->
+<script>
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "student-login.html";
+</script>
+
+<!-- ===== Header ===== -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/logo.png" alt="ECA Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin_dashboard.html">Dashboard</a></li>
+      <li><a href="create-batch.html">Create Batch</a></li>
+      <li><a class="active" href="#">Add Images</a></li>
+      <li><a href="student-login.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ===== Upload Images ===== -->
+<div class="auth-container">
+  <div class="auth-box">
+    <h2>Upload Question Images</h2>
+
+    <form id="imageUploadForm" enctype="multipart/form-data">
+
+      <!-- Batch -->
+      <div class="form-group">
+        <label>Select Batch</label>
+        <select id="batch_id" required>
+          <option value="">-- Select Batch --</option>
+        </select>
+      </div>
+
+      <!-- Test -->
+      <div class="form-group">
+        <label>Select Test</label>
+        <select id="test_id" required>
+          <option value="">-- Select Test --</option>
+        </select>
+      </div>
+
+      <!-- Images -->
+      <div class="form-group">
+        <label>Select Images (Multiple)</label>
+        <input type="file" id="images" accept="image/*" multiple required>
+        <small>Image names must match CSV/XLSX (q1.png, optA.jpg)</small>
+      </div>
+
+      <button type="submit" class="btn">Upload Images</button>
+    </form>
+  </div>
+</div>
+
+<footer>
+  © 2025 Elumalai's Chemistry Academy. All Rights Reserved.
+</footer>
+
+<script>
+/* ===== Mobile Menu ===== */
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("show");
+}
+
+/* ===== Load Batches ===== */
+async function loadBatches() {
+  try {
+    const res = await fetch("/api/batch", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const batches = await res.json();
+    const batchSelect = document.getElementById("batch_id");
+
+    batchSelect.innerHTML = `<option value="">-- Select Batch --</option>`;
+
+    batches.forEach(b => {
+      const opt = document.createElement("option");
+      opt.value = b.batch_id;
+      opt.textContent = b.batch_name;
+      batchSelect.appendChild(opt);
+    });
+
+  } catch (err) {
+    alert("Failed to load batches");
+    console.error(err);
+  }
+}
+
+/* ===== Load Tests By Batch ===== */
+document.getElementById("batch_id").addEventListener("change", async function () {
+  const batchId = this.value;
+  const testSelect = document.getElementById("test_id");
+
+  testSelect.innerHTML = `<option value="">-- Select Test --</option>`;
+  if (!batchId) return;
+
+  try {
+    const res = await fetch(`/api/tests/batch/${batchId}`, {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+    if (!data.success) {
+      alert(data.message);
+      return;
+    }
+
+    data.tests.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t.test_id;
+      opt.textContent = t.test_name;
+      testSelect.appendChild(opt);
+    });
+
+  } catch (err) {
+    alert("Failed to load tests");
+    console.error(err);
+  }
+});
+
+/* ===== Upload Images ===== */
+document.getElementById("imageUploadForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const batchId = batch_id.value;
+  const testId = test_id.value;
+  const images = document.getElementById("images").files;
+
+  if (!batchId || !testId || images.length === 0) {
+    alert("All fields are required");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("batch_id", batchId);
+  formData.append("test_id", testId);
+
+  for (let img of images) {
+    formData.append("images", img);
+  }
+
+  try {
+    const res = await fetch("/api/questions/upload-images", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+    alert(data.message);
+
+  } catch (err) {
+    alert("Upload failed");
+    console.error(err);
+  }
+});
+
+/* ===== Init ===== */
+loadBatches();
+</script>
+
+</body>
+</html>

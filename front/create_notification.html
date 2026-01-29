@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Notification</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 500px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 15px;
+    }
+
+    textarea, input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Create Notification</h2>
+
+  <form id="notificationForm">
+    <label>Description</label>
+    <textarea id="description" rows="4" required></textarea>
+
+    <label>URL (optional)</label>
+    <input type="url" id="url" placeholder="https://example.com">
+
+    <button type="submit">Post Notification</button>
+  </form>
+</div>
+
+<script>
+  document.getElementById("notificationForm").addEventListener("submit", async e => {
+    e.preventDefault();
+
+    const payload = {
+      description: document.getElementById("description").value.trim(),
+      url: document.getElementById("url").value.trim()
+    };
+
+    if (!payload.description) {
+      alert("Description is required");
+      return;
+    }
+
+    const res = await fetch("/api/notifications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    alert(data.message);
+    window.location.href("admin_dashboard.html");
+    if (data.success) {
+      document.getElementById("notificationForm").reset();
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -96,7 +96,7 @@
 
 <!-- FOOTER -->
 <footer>
-  <p>© 2025 Elumalai's Chemistry Academy</p>
+  <p>© 2026 Elumalai's Chemistry Academy</p>
 </footer>
 
 <!-- JS -->
@@ -126,6 +126,8 @@
           <h3>${batch.batch_name}</h3>
           <p><strong>Category:</strong> ${batch.batch_for}</p>
           <p class="price">₹ ${batch.batch_price}</p>
+          <p><strong>Start Date:</strong> ${new Date(batch.start_date).toLocaleDateString("en-IN")}</p>
+          <p><strong>End Date:</strong> ${new Date(batch.end_date).toLocaleDateString("en-IN")}</p>
           <a class="btn" href="testlist.html?batch_id=${batch.batch_id}">
             View Tests
           </a>

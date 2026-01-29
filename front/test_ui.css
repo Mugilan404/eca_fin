@@ -101,29 +101,52 @@
   margin-right: 10px;
 }
 
-/* Palette */
+/* ================= QUESTION PALETTE ================= */
+
 .palette {
-  flex: 1;
-  background: #f1f2f6;
-  padding: 20px;
+  width: 220px;
+  padding: 10px;
+  border-left: 1px solid #ccc;
 }
 
 #qPalette {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 #qPalette button {
-  padding: 8px;
-  border: none;
-  background: #dcdde1;
-  border-radius: 4px;
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background: #fff;          /* ⚪ Not visited */
+  cursor: pointer;
+  font-weight: bold;
 }
 
+/* 🔵 Current Question */
 #qPalette button.active {
-  background: #44bd32;
+  background: #2196f3;
+  color: #fff;
+}
+
+/* 🟢 Saved & Answered */
+#qPalette button.answered {
+  background: #4caf50;
+  color: #fff;
+}
+
+/* 🟣 Marked for Review */
+#qPalette button.review {
+  background: #9c27b0;
+  color: #fff;
+}
+
+/* 🔴 Seen but Not Answered */
+#qPalette button.seen {
+  background: #f44336;
   color: #fff;
 }
 

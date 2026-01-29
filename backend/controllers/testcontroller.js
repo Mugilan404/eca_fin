@@ -155,8 +155,8 @@ exports.getResult = async (req, res) => {
   try {
     const { attemptId } = req.params;
     const userId = req.user.user_id;
-
-    /* ================= VERIFY ATTEMPT OWNERSHIP ================= */
+console.log("Fetching result for attempt ID:", attemptId, "User ID:", userId);
+    /* ================= FETCH ATTEMPT + TEST + BATCH ================= */
     const [attemptRows] = await db.execute(
       `
       SELECT 
@@ -164,17 +164,18 @@ exports.getResult = async (req, res) => {
         ta.test_id,
         ta.score,
         ta.started_at,
-        ta.submitted_at as completed_at ,
+        ta.submitted_at AS completed_at,
         t.test_name,
-        t.test_time,
-        t.total_questions
+        t.total_questions,
+        b.batch_name
       FROM test_attempts ta
-      JOIN tests t ON ta.test_id = t.test_id
+      JOIN tests t  ON ta.test_id = t.test_id
+      JOIN batch b  ON t.batch_id = b.batch_id
       WHERE ta.attempt_id = ? AND ta.user_id = ?
       `,
       [attemptId, userId]
     );
-
+console.log("Attempt Rows:", attemptRows);
     if (attemptRows.length === 0) {
       return res.status(403).json({
         success: false,
@@ -184,18 +185,25 @@ exports.getResult = async (req, res) => {
 
     const attempt = attemptRows[0];
 
-    /* ================= FETCH QUESTIONS + ANSWERS ================= */
+    /* ================= FETCH QUESTIONS + USER ANSWERS ================= */
     const [questions] = await db.execute(
       `
       SELECT
         q.question_id,
         q.question_text,
+        q.question_image,
         q.option_a_text,
+        q.option_a_image,
         q.option_b_text,
+        q.option_b_image,
         q.option_c_text,
+        q.option_c_image,
         q.option_d_text,
+        q.option_d_image,
         q.correct_answer,
-        ua.selected_option
+        ua.selected_option,
+        q.reference_text,
+        q.reference_video_url
       FROM questions q
       LEFT JOIN student_answers ua
         ON q.question_id = ua.question_id
@@ -206,34 +214,21 @@ exports.getResult = async (req, res) => {
       [attemptId, attempt.test_id]
     );
 
-    /* ================= SCORE CALCULATION ================= */
-    let correct = 0;
-
-    questions.forEach(q => {
-      if (
-        q.selected_option &&
-        q.selected_option === q.correct_option
-      ) {
-        correct++;
-      }
-    });
-
-    const result = {
-      attempt_id: attempt.attempt_id,
-      test_id: attempt.test_id,
-      test_name: attempt.test_name,
-      total_questions: attempt.total_questions,
-      correct_answers: correct,
-      score: attempt.score ?? correct,
-      started_at: attempt.started_at,
-      completed_at: attempt.completed_at,
-      questions
-    };
-
     /* ================= RESPONSE ================= */
     res.json({
       success: true,
-      result
+      result: {
+        attempt_id: attempt.attempt_id,
+        test_id: attempt.test_id,
+        test_name: attempt.test_name,
+        batch_name: attempt.batch_name,   // 🔥 REQUIRED
+        total_questions: attempt.total_questions,
+        correct_answers: attempt.score,
+        score: attempt.score,
+        started_at: attempt.started_at,
+        completed_at: attempt.completed_at,
+        questions
+      }
     });
 
   } catch (error) {

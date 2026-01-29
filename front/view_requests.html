@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Enrollment Requests</title>
+    <link rel="stylesheet" href="view_requests.css">
+</head>
+<body>
+
+    <!-- ===== Header ===== -->
+    <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry Academy</span>
+      </div>
+      <!-- Hamburger menu -->
+      <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="admin_dashboard.html">Dashboard</a></li>
+        <li><a href="view_requests.html" class="active">View Requests</a></li>
+        <li><a href="create_notification.html">Create Notification</a></li>
+        <li><a href="student-login.html">Logout</a></li>
+      </ul>
+    </nav>
+  </header>
+
+    <!-- ===== Main Content ===== -->
+    <main class="container">
+        <h2>New Enrollment Requests</h2>
+
+        <table class="enroll-table">
+            <thead>
+                <tr>
+                    <th>Enroll ID</th>
+                    <th>Student Name</th>
+                    <th>Email</th>
+                    <th>Course</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+        </table>
+    </main>
+
+    <!-- ===== Footer ===== -->
+    <footer class="footer">
+        <p>© 2026 Admin System | All Rights Reserved</p>
+    </footer>
+<script>
+/* ================= AUTH ================= */
+const token = localStorage.getItem("token");
+if (!token) {
+  window.location.href = "login.html";
+}
+
+/* ================= ELEMENT ================= */
+const tableBody = document.querySelector(".enroll-table tbody");
+
+/* ================= FETCH ENROLLMENTS ================= */
+async function loadEnrollRequests() {
+  try {
+    const res = await fetch("/api/enroll/admin/requests", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+    console.log("FETCHED DATA:", data);
+
+    if (!data.success || !Array.isArray(data.data)) {
+      renderTable([]); // ✅ SAFE FALLBACK
+      return;
+    }
+
+    renderTable(data.data);
+
+  } catch (err) {
+    console.error("FETCH ERROR:", err);
+    renderTable([]);
+  }
+}
+
+/* ================= RENDER TABLE ================= */
+function renderTable(enrollments) {
+  tableBody.innerHTML = "";
+
+  if (!enrollments || enrollments.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center;">
+          No new enrollment requests
+        </td>
+      </tr>
+    `;
+    return;
+  }
+
+  enrollments.forEach(enroll => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${enroll.enroll_id}</td>
+      <td>${enroll.username}</td>
+      <td>${enroll.email}</td>
+      <td>${enroll.batch_name}</td>
+      <td class="status enrolled">
+        ${enroll.payment_status || "PENDING"}
+      </td>
+      <td>
+        <button class="btn grant"
+          onclick="grantAccess(${enroll.enroll_id})">
+          Grant Access
+        </button>
+      </td>
+    `;
+
+    tableBody.appendChild(tr);
+  });
+}
+
+/* ================= ACTION ================= */
+function grantAccess(enrollId) {
+  window.location.href = `grant_access.html?enroll_id=${enrollId}`;
+}
+// Mobile menu toggle
+document.getElementById("menu-toggle").addEventListener("click", () => {
+  document.getElementById("nav-links").classList.toggle("show");
+});
+/* ================= INIT ================= */
+loadEnrollRequests();
+</script>
+
+</body>
+</html>

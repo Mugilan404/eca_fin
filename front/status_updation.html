@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View Enrollment Requests | Admin</title>
+  <link rel="stylesheet" href="view_requests.css">
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="header">
+  <div class="logo">Admin Panel</div>
+  <nav class="nav">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="view_requests.html" class="active">Enroll Requests</a>
+    <a href="logout.html">Logout</a>
+  </nav>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="container">
+  <h2>Enrollment Requests</h2>
+
+  <table class="enroll-table">
+    <thead>
+      <tr>
+        <th>Enroll ID</th>
+        <th>Student Name</th>
+        <th>Email</th>
+        <th>Batch</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+
+    <tbody id="enrollTableBody">
+      <tr>
+        <td colspan="6" style="text-align:center;">Loading...</td>
+      </tr>
+    </tbody>
+  </table>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <p>© 2026 Elumalai's Chemistry Academy | Admin Panel</p>
+</footer>
+
+<script>
+/* ================= AUTH ================= */
+const token = localStorage.getItem("token");
+if (!token) window.location.href = "login.html";
+
+/* ================= ELEMENT ================= */
+const tableBody = document.getElementById("enrollTableBody");
+
+/* ================= FETCH REQUESTS ================= */
+async function loadEnrollments() {
+  try {
+    const res = await fetch("/api/enroll/admin/fetchenroll", {
+      headers: {
+        Authorization: "Bearer " + token
+      }
+    });
+
+    const data = await res.json();
+
+    if (!data.success) {
+      alert("Failed to fetch enrollments");
+      return;
+    }
+
+    renderTable(data.enrollments);
+
+  } catch (err) {
+    console.error(err);
+    alert("Server error");
+  }
+}
+
+/* ================= RENDER TABLE ================= */
+function renderTable(enrollments) {
+  tableBody.innerHTML = "";
+
+  if (enrollments.length === 0) {
+    tableBody.innerHTML = `
+      <tr>
+        <td colspan="6" style="text-align:center;">No enrollment requests</td>
+      </tr>
+    `;
+    return;
+  }
+
+  enrollments.forEach(e => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${e.enroll_id}</td>
+      <td>${e.name}</td>
+      <td>${e.user_email}</td>
+      <td>${e.batch_name}</td>
+
+      <td>
+        <select id="status_${e.enroll_id}" class="status-select">
+          <option value="enrolled" ${e.enroll_status === "enrolled" ? "selected" : ""}>
+            Enrolled
+          </option>
+          <option value="granted access" ${e.enroll_status === "granted access" ? "selected" : ""}>
+            Test Access Given
+          </option>
+          <option value="sent material" ${e.enroll_status === "sent material" ? "selected" : ""}>
+            Material Sent
+          </option>
+        </select>
+      </td>
+
+      <td>
+        <button class="btn submit"
+          onclick="submitStatus(${e.enroll_id})">
+          Submit
+        </button>
+      </td>
+    `;
+
+    tableBody.appendChild(tr);
+  });
+}
+
+/* ================= SUBMIT STATUS ================= */
+async function submitStatus(enrollId) {
+  const status = document.getElementById(`status_${enrollId}`).value;
+
+  if (!confirm(`Confirm update to "${status}"?`)) return;
+
+  try {
+    const res = await fetch("/api/enroll/admin/update-status", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token
+      },
+      body: JSON.stringify({
+        enroll_id: enrollId,
+        enroll_status: status
+      })
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      alert("Status updated successfully");
+      loadEnrollments(); // refresh table
+    } else {
+      alert(data.message || "Update failed");
+    }
+
+  } catch (err) {
+    console.error(err);
+    console.log(err);
+    alert("Server error");
+  }
+}
+
+/* ================= INIT ================= */
+loadEnrollments();
+</script>
+
+</body>
+</html>

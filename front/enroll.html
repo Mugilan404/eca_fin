@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Enroll | Elumalai's Chemistry Academy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="enroll.css">
+</head>
+
+<body>
+
+<!-- ===== HEADER (UNCHANGED) ===== -->
+<header class="main-header">
+  <div class="logo">Elumalai's Chemistry Academy</div>
+  <nav>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="batches.html">Batches</a>
+    <a href="logout.html">Logout</a>
+  </nav>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="container">
+
+  <h2 class="page-title">Batch Enrollment</h2>
+
+  <form id="enrollForm" class="enroll-card" enctype="multipart/form-data">
+
+    <!-- Batch Name -->
+    <div class="form-group">
+      <label>Batch Name</label>
+      <input type="text" id="batchName" disabled>
+    </div>
+
+    <!-- Full Name -->
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input
+        type="text"
+        id="name"
+        name="name"
+        placeholder="Enter your full name"
+        required
+      >
+    </div>
+
+    <!-- Email -->
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input
+        type="email"
+        id="email"
+        name="email"
+        placeholder="Enter your email"
+        required
+      >
+    </div>
+
+    <!-- Mobile -->
+    <div class="form-group">
+      <label for="contact">Contact Number</label>
+      <input
+        type="text"
+        id="contact"
+        name="mobile"
+        placeholder="Enter your contact number"
+        required
+      >
+    </div>
+
+    <!-- ===== PAYMENT QR ===== -->
+    <div class="qr-section">
+      <p class="qr-title">Scan & Pay</p>
+      <img src="img/qr.jpeg" alt="GPay QR">
+      <p class="qr-note">
+        Pay the course fee and upload the payment screenshot below
+      </p>
+    </div>
+
+    <!-- Payment Proof -->
+    <div class="form-group">
+      <label>Upload Payment Proof</label>
+      <input
+        type="file"
+        name="payment"
+        accept="image/*"
+        required
+      >
+    </div>
+
+    <button type="submit" class="btn-submit">
+      Submit Enrollment
+    </button>
+
+  </form>
+
+</main>
+
+<!-- ===== FOOTER (UNCHANGED) ===== -->
+<footer class="main-footer">
+  <p>© 2026 Elumalai's Chemistry Academy. All Rights Reserved.</p>
+</footer>
+
+<script>
+/* ================= AUTH ================= */
+const token = localStorage.getItem("token");
+if (!token) location.href = "login.html";
+
+/* ================= PARAM ================= */
+const batchId = new URLSearchParams(window.location.search).get("batch_id");
+if (!batchId) {
+  alert("Invalid batch");
+  location.href = "batches.html";
+}
+
+/* ================= LOAD BATCH NAME ================= */
+fetch(`/api/enroll/batch/${batchId}`, {
+  headers: { Authorization: "Bearer " + token }
+})
+.then(res => res.json())
+.then(data => {
+  if (data.success) {
+    document.getElementById("batchName").value = data.batch.batch_name;
+  } else {
+    alert("Failed to load batch");
+  }
+})
+.catch(() => alert("Server error"));
+
+/* ================= SUBMIT ENROLLMENT ================= */
+document.getElementById("enrollForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+  formData.append("batch_id", batchId);
+
+  const res = await fetch("/api/enroll/submit", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer " + token
+    },
+    body: formData
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Enrollment submitted successfully!");
+    location.href = "user_dashboard.html";
+  } else {
+    alert(data.message || "Enrollment failed");
+  }
+});
+</script>
+
+</body>
+</html>

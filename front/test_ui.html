@@ -9,7 +9,7 @@
 
 <body>
 
-<!-- ================= INSTRUCTIONS PAGE ================= -->
+<!-- ================= INSTRUCTIONS ================= -->
 <section id="instructionPage" class="instruction-page">
   <div class="instruction-box">
     <h2>📝 Test Instructions</h2>
@@ -19,12 +19,12 @@
       <li>Total Time: <span id="instTime">--</span> Minutes</li>
       <li>No negative marking</li>
       <li>Do not refresh or exit fullscreen</li>
-      <li>Test auto-submits on time up</li>
+      <li>Auto submit when time ends</li>
     </ul>
 
     <label class="agree">
       <input type="checkbox" id="agreeChk">
-      I have read and understood all instructions
+      I agree to the instructions
     </label>
 
     <button id="startBtn" disabled>Start Test</button>
@@ -34,28 +34,28 @@
 <!-- ================= TEST UI ================= -->
 <section id="testUI" class="test-ui hidden">
 
-  <!-- Header -->
   <header class="test-header">
     <span>Elumalai's Chemistry Academy</span>
     <span class="timer" id="timer">00:00</span>
   </header>
 
-  <!-- Body -->
   <div class="test-body">
 
     <!-- Question Area -->
     <div class="question-panel">
       <h3 id="questionText"></h3>
-
+      <img id="questionImage" class="question-img hidden">
       <div class="options" id="options"></div>
 
       <div class="nav-btns">
         <button onclick="prevQ()">Previous</button>
+        <button onclick="saveAndNext()">Save & Next</button>
+        <button onclick="markForReview()">Mark for Review</button>
         <button onclick="nextQ()">Next</button>
       </div>
     </div>
 
-    <!-- Question Palette -->
+    <!-- Palette -->
     <aside class="palette">
       <h4>Questions</h4>
       <div id="qPalette"></div>
@@ -66,27 +66,35 @@
 </section>
 
 <script>
-/* ================= AUTH GUARD ================= */
+/* ================= AUTH ================= */
 const token = localStorage.getItem("token");
-if (!token) window.location.href = "login.html";
+if (!token) location.href = "login.html";
 
-/* ================= URL PARAM ================= */
-const params = new URLSearchParams(window.location.search);
-const testId = params.get("test_id");
-if (!testId) alert("Invalid test");
+/* ================= PARAM ================= */
+const testId = new URLSearchParams(window.location.search).get("test_id");
+if (!testId) alert("Invalid Test");
 
 /* ================= STATE ================= */
 let questions = [];
 let current = 0;
 let answers = {};
+let qStatus = {}; // not_visited | seen | answered | review
 let timeLeft = 0;
-let timerInterval;
+let timerInterval = null;
+
+let batchName = "";
+let testName = "";
 
 /* ================= ELEMENTS ================= */
 const instructionPage = document.getElementById("instructionPage");
 const testUI = document.getElementById("testUI");
 const startBtn = document.getElementById("startBtn");
 const agreeChk = document.getElementById("agreeChk");
+const questionText = document.getElementById("questionText");
+const questionImage = document.getElementById("questionImage");
+const optionsDiv = document.getElementById("options");
+const palette = document.getElementById("qPalette");
+const timer = document.getElementById("timer");
 
 /* ================= LOAD TEST ================= */
 async function loadTest() {
@@ -96,64 +104,78 @@ async function loadTest() {
 
   const data = await res.json();
   if (!data.success) {
-    alert(data.message);
+    alert("Failed to load test");
     return;
   }
 
-  questions = data.questions;
+  questions = data.questions || [];
+  batchName = data.batch_name;
+  testName = data.test_name;
 
   document.getElementById("instTotalQ").innerText = questions.length;
   document.getElementById("instTime").innerText = data.test_time;
 
   timeLeft = data.test_time * 60;
+  buildPalette();
 }
-
 loadTest();
 
-/* ================= START FLOW ================= */
+/* ================= START ================= */
 agreeChk.addEventListener("change", () => {
   startBtn.disabled = !agreeChk.checked;
 });
 
 startBtn.addEventListener("click", () => {
-  enterFullscreen();
+  document.documentElement.requestFullscreen?.();
   instructionPage.style.display = "none";
   testUI.classList.remove("hidden");
+
   loadQuestion(0);
   startTimer();
 });
 
-/* ================= FULLSCREEN ================= */
-function enterFullscreen() {
-  if (document.documentElement.requestFullscreen)
-    document.documentElement.requestFullscreen();
+/* ================= IMAGE PATH ================= */
+function imagePath(file) {
+  return `/uploads/questions/${batchName}/${testName}/${file}`;
 }
 
-/* ================= QUESTION RENDER ================= */
+/* ================= LOAD QUESTION ================= */
 function loadQuestion(i) {
   current = i;
   const q = questions[i];
+  if (!q) return;
 
-  document.getElementById("questionText").innerText =
-    `Q${i + 1}. ${q.question_text || ""}`;
+  if (!qStatus[q.question_id]) {
+    qStatus[q.question_id] = "seen";
+  }
 
-  const optionsDiv = document.getElementById("options");
+  questionText.innerText = `Q${i + 1}. ${q.question_text || ""}`;
+
+  if (q.question_image) {
+    questionImage.src = imagePath(q.question_image);
+    questionImage.classList.remove("hidden");
+  } else {
+    questionImage.classList.add("hidden");
+  }
+
   optionsDiv.innerHTML = "";
 
-  ["a","b","c","d"].forEach(key => {
-    const optText = q[`option_${key}_text`];
-    if (!optText) return;
+  ["a","b","c","d"].forEach(k => {
+    const text = q[`option_${k}_text`];
+    const img = q[`option_${k}_image`];
+    if (!text && !img) return;
 
     const label = document.createElement("label");
+    label.className = "option";
     label.innerHTML = `
-      <input type="radio" name="q_${q.question_id}" value="${key.toUpperCase()}"
-        ${answers[q.question_id] === key.toUpperCase() ? "checked" : ""}>
-      ${optText}
+      <input type="radio" name="q_${q.question_id}" value="${k.toUpperCase()}"
+        ${answers[q.question_id] === k.toUpperCase() ? "checked" : ""}>
+      <span>${text || ""}</span>
+      ${img ? `<img src="${imagePath(img)}" class="option-img">` : ""}
     `;
 
     label.querySelector("input").onchange = () => {
-      answers[q.question_id] = key.toUpperCase();
-      highlightPalette();
+      answers[q.question_id] = k.toUpperCase();
     };
 
     optionsDiv.appendChild(label);
@@ -166,14 +188,26 @@ function loadQuestion(i) {
 function nextQ() {
   if (current < questions.length - 1) loadQuestion(current + 1);
 }
-
 function prevQ() {
   if (current > 0) loadQuestion(current - 1);
 }
 
-/* ================= PALETTE ================= */
-const palette = document.getElementById("qPalette");
+/* ================= ACTION BUTTONS ================= */
+function saveAndNext() {
+  const qId = questions[current].question_id;
+  qStatus[qId] = answers[qId] ? "answered" : "seen";
+  highlightPalette();
+  nextQ();
+}
 
+function markForReview() {
+  const qId = questions[current].question_id;
+  qStatus[qId] = "review";
+  highlightPalette();
+  nextQ();
+}
+
+/* ================= PALETTE ================= */
 function buildPalette() {
   palette.innerHTML = "";
   questions.forEach((_, i) => {
@@ -185,16 +219,25 @@ function buildPalette() {
 }
 
 function highlightPalette() {
-  [...palette.children].forEach((b, i) => {
+  [...palette.children].forEach((btn, i) => {
     const qId = questions[i].question_id;
-    b.className =
-      i === current ? "active" :
-      answers[qId] ? "answered" : "";
+    btn.className = "";
+
+    if (i === current) {
+      btn.classList.add("active");
+      return;
+    }
+
+    if (qStatus[qId] === "answered") btn.classList.add("answered");
+    else if (qStatus[qId] === "review") btn.classList.add("review");
+    else if (qStatus[qId] === "seen") btn.classList.add("seen");
   });
 }
 
 /* ================= TIMER ================= */
 function startTimer() {
+  if (timerInterval) return;
+
   timerInterval = setInterval(() => {
     const min = Math.floor(timeLeft / 60);
     const sec = timeLeft % 60;
@@ -218,25 +261,19 @@ async function submitTest() {
       "Content-Type": "application/json",
       Authorization: "Bearer " + token
     },
-    body: JSON.stringify({
-      test_id: testId,
-      answers
-    })
+    body: JSON.stringify({ test_id: testId, answers })
   });
 
   const data = await res.json();
-
   if (!data.success) {
     alert("Submission failed");
     return;
   }
 
-  // 🔁 Redirect to result page
-  window.location.href = `results.html?attempt_id=${data.attempt_id}`;
+  location.href = `results.html?attempt_id=${data.attempt_id}`;
 }
 
-
-/* ================= BLOCK EXIT ================= */
+/* ================= FULLSCREEN BLOCK ================= */
 document.addEventListener("fullscreenchange", () => {
   if (!document.fullscreenElement) {
     alert("Do not exit fullscreen during the test!");

@@ -51,7 +51,11 @@ app.use("/api/materials", require("./backend/routes/materialroutes"));
 app.use("/api/tests", require("./backend/routes/testroutes"));
 app.use("/api/questions", require("./backend/routes/questionroutes"));
 app.use("/api/attempts", require("./backend/routes/attemptroutes"));
-
+app.use("/api/enroll", require("./backend/routes/enrollroutes"));
+console.log("✅ enroll routes loaded");
+const notificationRoutes = require("./backend/routes/notificationroutes");
+app.use("/api/notifications", notificationRoutes);
+console.log("✅ notification routes loaded");
 /* =====================================================
    SPA / 404 FALLBACK
 ===================================================== */

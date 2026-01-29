@@ -17,9 +17,10 @@
       </div>
       <span class="menu-toggle" id="menu-toggle">&#9776;</span>
       <ul class="nav-links" id="nav-links">
-        <li><a href="admin_dashboard.html" class="active">Dashboard</a></li>
-        <li><a href="create-batch.html">Create Batch</a></li>
-        <li><a href="manage-batches.html">Manage Batches</a></li>
+        <li><a href="admin_dashboard.html" >Dashboard</a></li>
+        <li><a href="create-batch.html" class="active">Create Batch</a></li>
+        <li><a href="upload_material.html">Upload Materials</a></li>
+        <li><a href="create_test.html">Create Tests</a></li>
         <li><a href="student-login.html">Logout</a></li>
       </ul>
     </nav>
@@ -42,6 +43,15 @@
             <option value="Tests" selected>Tests</option>
           </select>
         </div>
+        <div class="form-group">
+  <label for="start_date">Batch Start Date</label>
+  <input type="date" id="start_date" name="start_date" required>
+</div>
+
+<div class="form-group">
+  <label for="end_date">Batch End Date</label>
+  <input type="date" id="end_date" name="end_date" required>
+</div>
 
         <div class="form-group">
           <label for="batch_price">Batch Price (₹)</label>
@@ -59,7 +69,7 @@
 
   <!-- 🔹 Footer -->
   <footer>
-    <p>© 2025 Elumalai's Chemistry Academy. All rights reserved.</p>
+    <p>© 2026 Elumalai's Chemistry Academy. All rights reserved.</p>
   </footer>
 
   <script>
@@ -69,15 +79,20 @@
     const batchName = document.getElementById("batch_name").value.trim();
     const batchFor = document.getElementById("batch_for").value;
     const batchPrice = document.getElementById("batch_price").value;
-
+    const start_date = document.getElementById("start_date").value;
+    const end_date = document.getElementById("end_date").value;
+    console.log(start_date, end_date);
+  
     try {
-      const response = await fetch("/api/batch", {
+      const response = await fetch("/api/batch/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           batch_name: batchName,
           batch_for: batchFor,
-          batch_price: batchPrice
+          batch_price: batchPrice,
+          start_date: start_date,
+          end_date: end_date
         })
       });
 
