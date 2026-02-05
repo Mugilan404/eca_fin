@@ -1,0 +1,56 @@
+/* ===== Responsive Styles ===== */
+/* Desktop */
+@media (min-width: 769px) {
+  #menu-toggle {
+    display: none;
+  }
+
+  .nav-links {
+    display: flex;
+  }
+}
+
+/* Mobile menu default (hidden) */
+@media (max-width: 768px) {
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    background: #fff;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+
+  .nav-links.show {
+    display: flex;
+  }
+
+  #menu-toggle {
+    display: block;
+    cursor: pointer;
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  h1, h2, h3 {
+    font-size: 20px;
+  }
+  .btn {
+    padding: 12px;
+    font-size: 14px;
+  }
+  .dashboard-table th,
+  .dashboard-table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  /* ✅ Nav links full-width on very small screens */
+  .nav-links {
+    width: 220px;
+    border-radius: 0 0 10px 10px;
+  }
+}

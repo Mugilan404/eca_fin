@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Elumalai's Chemistry Academy | Edit Test</title>
+
+  <link rel="stylesheet" href="create_test.css" />
+  <link rel="icon" href="img/logo.png" type="image/x-icon" />
+</head>
+<body>
+
+<!-- ===== Header ===== -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin_dashboard.html">Dashboard</a></li>
+      <li><a href="create-batch.html">Create Batch</a></li>
+      <li><a class="active" href="#">Edit Test</a></li>
+      <li><a href="admin-login.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- ===== Edit Test Form ===== -->
+<div class="auth-container">
+  <div class="auth-box">
+    <h2>Edit Test Question</h2>
+
+    <form id="editTestForm">
+
+      <!-- Batch -->
+      <div class="form-group">
+        <label>Select Batch</label>
+        <select id="batch_id" required>
+          <option value="">-- Loading Batches --</option>
+        </select>
+      </div>
+
+      <!-- Test -->
+      <div class="form-group">
+        <label>Select Test</label>
+        <select id="test_id" required disabled>
+          <option value="">-- Select Test --</option>
+        </select>
+      </div>
+
+      <!-- Question -->
+      <div class="form-group">
+        <label>Select Question</label>
+        <select id="question_serial" required disabled>
+          <option value="">-- Select Question --</option>
+        </select>
+      </div>
+
+      <!-- Field -->
+      <div class="form-group">
+        <label>Choose Field</label>
+        <select id="field" required>
+          <option value="">-- Select Field --</option>
+          <option value="question_type">Question Type</option>
+          <option value="question_text">Question Text</option>
+          <option value="question_image">Question Image</option>
+          <option value="option_a_type">Option A Type</option>
+          <option value="option_a_text">Option A Text</option>
+          <option value="option_a_image">Option A Image</option>
+          <option value="option_b_type">Option B Type</option>
+          <option value="option_b_text">Option B Text</option>
+          <option value="option_b_image">Option B Image</option>
+          <option value="option_c_type">Option C Type</option>
+          <option value="option_c_text">Option C Text</option>
+          <option value="option_c_image">Option C Image</option>
+          <option value="option_d_type">Option D Type</option>
+          <option value="option_d_text">Option D Text</option>
+          <option value="option_d_image">Option D Image</option>
+          <option value="correct_answer">Correct Answer</option>
+          <option value="reference_text">Reference</option>
+        </select>
+      </div>
+
+      <!-- New Value -->
+      <div class="form-group">
+        <label>New Value</label>
+        <input type="text" id="new_value" required />
+      </div>
+
+      <button type="submit" class="btn">Update Question</button>
+      <p id="message"></p>
+
+    </form>
+  </div>
+</div>
+
+<footer>
+    For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com
+  © 2026 Elumalai's Chemistry Academy. All Rights Reserved.
+</footer>
+
+<script>
+/* ===== Mobile Menu ===== */
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("show");
+}
+
+/* ===== Load Batches ===== */
+document.addEventListener("DOMContentLoaded", async () => {
+  const batchSelect = document.getElementById("batch_id");
+
+  try {
+    const res = await fetch("/api/batch/tests");
+    const data = await res.json();
+
+    batchSelect.innerHTML = '<option value="">-- Select Batch --</option>';
+    data.batches.forEach(batch => {
+      batchSelect.innerHTML += `<option value="${batch.batch_id}">${batch.batch_name}</option>`;
+    });
+  } catch {
+    alert("Error loading batches");
+  }
+});
+
+/* ===== Load Tests by Batch ===== */
+document.getElementById("batch_id").addEventListener("change", async e => {
+  const testSelect = document.getElementById("test_id");
+  const questionSelect = document.getElementById("question_serial");
+
+  testSelect.disabled = true;
+  questionSelect.disabled = true;
+  questionSelect.innerHTML = '<option value="">-- Select Question --</option>';
+
+  if (!e.target.value) return;
+
+  //const res = await fetch(`/api/tests/batch/${e.target.value}`);
+  const res = await fetch(`/api/tests/batch/${e.target.value}`, {
+  headers: {
+    Authorization: "Bearer " + localStorage.getItem("token")
+  }
+});
+
+  const data = await res.json();
+  console.log(e.target.value, data);
+  testSelect.innerHTML = '<option value="">-- Select Test --</option>';
+  data.tests.forEach(test => {
+    testSelect.innerHTML += `<option value="${test.test_id}">${test.test_name}</option>`;
+  });
+
+  testSelect.disabled = false;
+});
+
+/* ===== Load Questions by Test ===== */
+document.getElementById("test_id").addEventListener("change", async e => {
+  const questionSelect = document.getElementById("question_serial");
+  questionSelect.innerHTML = '<option value="">-- Loading Questions --</option>';
+  questionSelect.disabled = true;
+
+  if (!e.target.value) return;
+
+  const res = await fetch(`/api/tests/questions/${e.target.value}`);
+  const data = await res.json();
+
+  questionSelect.innerHTML = '<option value="">-- Select Question --</option>';
+  data.questions.forEach(q => {
+    questionSelect.innerHTML += `<option value="${q.question_id}"> ${q.question_text}
+    </option>`;
+  });
+
+  questionSelect.disabled = false;
+});
+
+/* ===== Edit Test Question ===== */
+document.getElementById("editTestForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const msg = document.getElementById("message");
+
+  const payload = {
+    test_id: test_id.value,
+    question_id: question_serial.value,
+    field: field.value,
+    new_value: new_value.value
+  };
+  console.log("Payload:", payload);
+  const res = await fetch("/api/tests/edit-question", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+console.log("Response:", res);
+  const data = await res.json();
+  msg.style.color = data.success ? "green" : "red";
+  msg.innerText = data.message;
+});
+</script>
+</body>
+</html>

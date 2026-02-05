@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elumalai's Chemistry | Login</title>
   <link rel="stylesheet" href="student-login.css">
-  <link rel="icon" href=" " type="image/x-icon">
+  <link rel="icon" href="img/logo.png" type="image/x-icon">
 </head>
 <body>
   <!-- 🔹 Header -->
   <header>
     <nav class="navbar">
       <div class="logo">
-        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <img src="img/logo.png" alt="ChemGuide Logo">
         <span>Elumalai's Chemistry Academy</span>
       </div>
       <!-- Hamburger menu -->
@@ -53,6 +53,7 @@
 
   <!-- 🔹 Footer -->
   <footer>
+    <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
     <p>© 2026 Elumalai's Chemistry Academy. All rights reserved.</p>
   </footer>
 
@@ -84,6 +85,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
     }
 
     // ✅ Save token
+    localStorage.setItem("loggedIn", "true");
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data.user));
 

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Elumalai's Chemistry | Admin Dashboard</title>
   <link rel="stylesheet" href="admin_dashboard.css">
-  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+  <link rel="icon" href="img/logo.png" type="image/x-icon">
   <style>
     /* 🔹 Responsive Navbar */
     .menu-toggle {
@@ -51,19 +51,23 @@
   <header>
     <nav class="navbar">
       <div class="logo">
-        <img src="assets/images/logo.png" alt="ChemGuide Logo">
+        <img src="img/logo.png" alt="ChemGuide Logo">
         <span>Admin Panel</span>
       </div>
       <span class="menu-toggle" onclick="toggleMenu()">☰</span>
       <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
+        <li><a href="admin_dashboard.html" class="active">Dashboard</a></li>
         <li><a href="study_materials.html">Study Materials</a></li>
         <li><a href="online_test.html">Online Test</a></li>
-        <li><a href="login.html">Logout</a></li>
+        <li><a href="online_class.html">Online Class</a></li>
+        <li><a href="admin-login.html">Logout</a></li>
       </ul>
     </nav>
   </header>
-
+<!-- 🔔 Sliding Notifications -->
+  <div class="notification-bar">
+    <marquee id="topNotifications" behavior="scroll" direction="left"></marquee>
+  </div>
   <!-- 🔹 Dashboard -->
   <section class="dashboard-container">
     <h2>Welcome, Admin</h2>
@@ -71,83 +75,108 @@
 
       <!-- Create batch -->
       <div class="dashboard-card">
-        <h3>📘 Create Batch</h3>
+        <h3> Create Batch</h3>
         <p>Create a new batch for students to join and access study materials.</p>
         <a href="create-batch.html" class="btn">Go to Create Batch</a>
       </div>
       <!-- View Enrollments -->
       <div class="dashboard-card">
-        <h3>📋 View Enrollments</h3>
+        <h3> View Enrollments</h3>
         <p>View all enrollment requests and manage them.</p>
         <a href="view_requests.html" class="btn">Go to View Requests</a>
       </div>
       <!-- Update Enrollments-->
        <div class="dashboard-card">
-        <h3>✏️ Update Enrollments </h3>
+        <h3> Update Enrollments </h3>
         <p>Update the enrollment status of students in various batches.</p>
         <a href="status_updation.html" class="btn">Go to Update Enrollments</a>
       </div>
 
       <!-- Grant access -->
       <div class="dashboard-card">
-        <h3>✏️ Grant Access </h3>
+        <h3> Grant Access </h3>
         <p>grant access for users to the specific batch for materials and tests.</p>
         <a href="grant_access.html" class="btn">Go to Grant Access</a>
       </div>
 
       <!-- Revoke access -->
       <div class="dashboard-card">
-        <h3>✏️ Revoke Access </h3>
+        <h3> Revoke Access </h3>
         <p>Revoke the access from the users to view the batch materials and tests.</p>
         <a href="revoke_access.html" class="btn">Go to Revoke Access</a>
       </div>
         <!-- Upload Materials -->
       <div class="dashboard-card">
-        <h3>📘 Upload Study Materials</h3>
+        <h3> Upload Study Materials</h3>
         <p>Add new PDF notes, question banks, and reference docs for students.</p>
         <a href="upload_material.html" class="btn">Go to Upload Page</a>
       </div>
-      
-      <!-- Change Pdf  -->
-      <!--<div class="dashboard-card">
-        <h3>📘 Edit pdf  </h3>
-        <p>Change the pdf files for the batch materials.</p>
-        <a href="change_material.html" class="btn">Go to Change Material</a>
-      </div>-->
-
-      
 
       <!-- Create Test -->
       <div class="dashboard-card">
-        <h3>📝 Create New Test</h3>
+        <h3> Create New Test</h3>
         <p>Prepare and publish new online tests with custom questions & answers.</p>
         <a href="create_test.html" class="btn">Go to Create Test</a>
       </div>
-
+      <!--Create Class-->
+      <div class="dashboard-card">
+        <h3> Create New Class</h3>
+        <p>Create a new online class for students to join.</p>
+        <a href="create_class.html" class="btn">Go to Create Class</a>
+      </div>
+      <!-- Delete Class -->
+      <div class="dashboard-card">
+        <h3> Delete Class</h3>
+        <p>Delete existing classes.</p>
+        <a href="delete_class.html" class="btn">Go to Delete Class Page</a>
+      </div>
       <!-- Edit Test -->
       <div class="dashboard-card">
-        <h3>✏️ Edit Existing Tests</h3>
+        <h3> Edit Existing Tests</h3>
         <p>Update or modify test details, questions, and tags.</p>
         <a href="edit_test.html" class="btn">Go to Edit Page</a>
       </div>
       <!-- Upload Image for Test -->
       <div class="dashboard-card">
-        <h3>✏️ Upload Question Images</h3>
+        <h3> Upload Question Images</h3>
         <p>Upload images for questions in a specific test.</p>
         <a href="image_upload.html" class="btn">Go to Upload Page</a>
       </div>
+      <!-- Upload Video for Test -->
+      <div class="dashboard-card">
+        <h3> Upload Question Videos</h3>
+        <p>Upload videos for questions in a specific test.</p>
+        <a href="video_upload.html" class="btn">Go to Video Upload Page</a>
+      </div>
+      <!---->
     </div>
     <!--Create Notification-->
     <div class="dashboard-grid" style="margin-top: 20px;">
       <div class="dashboard-card" style="width: 100%;">
-        <h3>🔔 Create Notification</h3>
+        <h3> Create Notification</h3>
         <p>Send important announcements or updates to all users.</p>
         <a href="create_notification.html" class="btn">Go to Notification Page</a>
       </div>
+    </div>
+    <div class="dashboard-grid" style="margin-top: 20px;">
+      <div class="dashboard-card" style="width: 100%;">
+        <h3> Create Popup Notification</h3>
+        <p>Create and upload a new popup notification for users.</p>
+        <a href="create_popup.html" class="btn">Go to Create Popup Page</a>
+      </div>
+    </div>
+    <!-- Delete Notification -->
+      <div class="dashboard-card">
+        <h3> Delete Notification</h3>
+        <p>Delete existing notifications.</p>
+        <a href="delete_notification.html" class="btn">Go to Delete Notification Page</a>
+      </div>
+    </div>
   </section>
 
   <!-- 🔹 Footer -->
   <footer>
+    <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
     <p>© 2026 Elumalai's Chemistry Academy</p>
   </footer>
 
@@ -171,6 +200,31 @@
         console.error("Analytics fetch failed", err);
       }
     }
+    /* ===============================
+     TOP 3 NOTIFICATIONS (SLIDER)
+  =============================== */
+  fetch("/api/notifications/top3")
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) return;
+
+      const container = document.getElementById("topNotifications");
+
+      if (!data.notifications.length) {
+        container.innerHTML = "<span>No notifications</span>";
+        return;
+      }
+
+      container.innerHTML = data.notifications
+        .map(n => `
+          <a href="${n.url || '#'}" target="_blank">
+            ${n.description}
+          </a>
+        `)
+        .join(" | ");
+    })
+    .catch(err => console.error("Top 3 fetch error:", err));
+
     loadAnalytics();
   </script>
 </body>

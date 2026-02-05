@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Grant Access</title>
 <link rel="stylesheet" href="online_test.css">
-
+<link rel="icon" href="img/logo.png" type="image/x-icon" />
 <style>
 /* ===== Base Layout ===== */
 body {
@@ -19,11 +19,52 @@ header {
   background: #003366;
   color: #fff;
   padding: 14px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-header h1 {
-  margin: 0;
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.logo img {
+  height: 40px;
+  margin-right: 8px;
+}
+
+.logo span {
   font-size: 22px;
+  font-weight: bold;
+}
+
+.nav {
+  display: flex;
+  gap: 20px;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.nav a:hover,
+.nav .active {
+  color: #fbc531;
+}
+
+/* Mobile Nav Toggle Button */
+.menu-toggle {
+  display: none;
+  font-size: 26px;
+  color: #fff;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 5px;
 }
 
 footer {
@@ -69,7 +110,6 @@ form select {
 
 button {
   margin-top: 22px;
-  width: 100%;
   padding: 12px;
   background: #003366;
   color: #fff;
@@ -95,23 +135,48 @@ button:hover {
   margin: 0 0 6px;
 }
 
-#proofLink {
-  color: #0056b3;
-  text-decoration: none;
-  font-weight: 600;
+#proofImage {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 /* ===============================
    MOBILE OPTIMIZATION
    =============================== */
 @media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .nav {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    background: rgba(0,0,0,0.95);
+    flex-direction: column;
+    width: 220px;
+    display: none;
+    padding: 20px;
+    border-radius: 0 0 10px 10px;
+    z-index: 999;
+  }
+
+  .nav.show {
+    display: flex;
+  }
+
+  .nav a {
+    margin: 12px 0;
+  }
 
   header {
     padding: 12px 16px;
     text-align: center;
   }
 
-  header h1 {
+  .logo span {
     font-size: 18px;
   }
 
@@ -148,8 +213,17 @@ button:hover {
 </head>
 <body>
 
-<header>
-  <h1>Admin Panel – Grant Batch Access</h1>
+<header class="header">
+  <div class="logo">
+        <img src="img/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry Academy</span>
+      </div>
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+  <nav class="nav" id="navLinks">
+    <a href="admin_dashboard.html">Dashboard</a>
+    <a href="view_requests.html" class="active">Enroll Requests</a>
+    <a href="admin-login.html">Logout</a>
+  </nav>
 </header>
 
 <div class="page-container">
@@ -188,7 +262,7 @@ button:hover {
 
     <div id="proofSection">
       <h4>Payment Proof</h4>
-      <a id="proofLink" target="_blank">View Payment Proof</a>
+      <img id="proofImage" alt="Payment Proof" style="max-width: 100%; height: auto; border: 1px solid #ccc; border-radius: 4px;">
     </div>
 
     <button type="submit">Grant Access</button>
@@ -196,10 +270,15 @@ button:hover {
 </div>
 
 <footer>
+  For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com
   © 2026 Elumalai's Chemistry Academy. All rights reserved.
 </footer>
 
 <script>
+// 🔹 Toggle menu for mobile
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("show");
+}
 const params = new URLSearchParams(window.location.search);
 const enrollId = params.get("enroll_id");
 
@@ -222,9 +301,8 @@ async function loadEnrollData() {
   payment_status.value = data.payment_status;
   paid_through.value = data.paid_through;
 
-  if (data.payment_proof) {
-    proofLink.href = `/uploads/${data.payment_proof}`;
-    proofLink.textContent = "View Payment Proof";
+  if (data.payment_image) {
+    document.getElementById("proofImage").src = `/uploads/payments/${data.payment_image}`;
   } else {
     proofSection.style.display = "none";
   }

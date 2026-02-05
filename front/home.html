@@ -2,9 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Elumalai Chemistry Academy</title>
+  <title>Elumalai's Chemistry Academy</title>
   <link rel="stylesheet" href="home.css">
+  <link rel="icon" href="img/logo.png" />
 </head>
+<div id="popupModal" style="display:block;">
+  <div id="popupOverlay"></div>
+  <div id="popupContent" style="display:none;">
+    <a id="popupLink" href="#" target="_blank">
+      <img id="popupImage" src="" alt="Popup" />
+    </a>
+    <button id="popupClose">&times;</button>
+  </div>
+</div>
 <body>
 
  
@@ -12,20 +22,24 @@
   <header>
   <nav class="navbar">
     <div class="logo">
-      <img src="assets/images/logo.png" alt="Logo" />
-      <span>Elumalai's Chemistry Academy</span>
-          </div>
+        <img src="img/logo.png" alt="Elumalai's Chemistry Academy logo" />
+        <span>Elumalai's Chemistry Academy</span>
+            </div>
 
-    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
-    <ul class="nav-links" id="nav-links">
+    <ul class="nav-links" id="navLinks">
       <li><a href="home.html" class="active">Home</a></li>
       <li><a href="study_materials.html" >Study Materials</a></li>
       <li><a href="online_test.html">Online Tests</a></li>
+      <li><a href="online_class.html">Online Class</a></li>
       <li><a href="student-login.html">Account</a></li>
     </ul>
   </nav>
 </header>
+<!-- Popup Modal -->
+
+
    <!-- 🔔 Sliding Notifications -->
   <div class="notification-bar">
     <marquee id="topNotifications" behavior="scroll" direction="left"></marquee>
@@ -34,7 +48,7 @@
   <!-- About Section -->
   <section class="about">
     <p>
-      <strong>Elumalai Chemistry Academy</strong> provides focused coaching for
+      <strong>Elumalai's Chemistry Academy</strong> provides focused coaching for
       <strong>TN-TRB Chemistry</strong> aspirants with deep conceptual teaching,
       PYQ-based training, and continuous evaluation to ensure success.
     </p>
@@ -44,17 +58,17 @@
   <section class="approach">
     <h2>📘 Our Teaching Approach</h2>
     <ul>
-      <li>Conceptual teaching from basics to TRB level</li>
-      <li>Exam-oriented notes (simple language, high retention)</li>
-      <li>Continuous Assessment Test – Every week (20 MCQs)</li>
-      <li>Previous Year Question (PYQ) analysis</li>
-      <li>MCQs practice</li>
-      <li>Short tricks where applicable (without losing concepts)</li>
-      <li>Repeated revision cycles</li>
+      <li>Conceptual Teaching From Basics to TRB Level</li>
+      <li>Exam-oriented Notes (Simple Language, High Retention)</li>
+      <li>Continuous Assessment Test – Every Week (20 MCQs)</li>
+      <li>Previous Year Question (PYQ) Analysis</li>
+      <li>MCQs Practice</li>
+      <li>Short Tricks Where Applicable (Without Losing Concepts)</li>
+      <li>Repeated Revision Cycles</li>
       <li>Printed / PDF Notes (TRB-focused)</li>
-      <li>Concept maps & flow charts</li>
+      <li>Concept Maps & Flow Charts</li>
       <li>Chapter-wise MCQs</li>
-      <li>Model question papers</li>
+      <li>Model Question Papers</li>
     </ul>
   </section>
 
@@ -62,12 +76,12 @@
   <section class="features">
     <h2>⭐ Course Features</h2>
     <div class="feature-grid">
-      <div>🎯 TN-TRB focused preparation</div>
-      <div>📚 Updated syllabus coverage</div>
-      <div>🧩 Concept clarity + exam strategy</div>
-      <div>📝 Regular tests & feedback</div>
-      <div>🔁 Multiple revisions before exam</div>
-      <div>💬 Doubt-clearing sessions</div>
+      <div>🎯 TN-TRB Focused Preparation</div>
+      <div>📚 Updated Syllabus Coverage</div>
+      <div>🧩 Concept Clarity + Exam Strategy</div>
+      <div>📝 Regular Tests & Feedback</div>
+      <div>🔁 Multiple Revisions Before Exam</div>
+      <div>💬 Doubt-clearing Sessions</div>
     </div>
   </section>
 
@@ -79,14 +93,17 @@
 
   <!-- Footer -->
   <footer class="footer">
-    <p>© 2026 Elumalai Chemistry Academy | All Rights Reserved</p>
+    <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
+    <p>© 2026 Elumalai's Chemistry Academy | All Rights Reserved</p>
   </footer>
 
   <!-- JS -->
 <script>
-  document.getElementById("menu-toggle").addEventListener("click", () => {
-  document.getElementById("nav-links").classList.toggle("show");
-});
+  // 🔹 Toggle menu for mobile
+  function toggleMenu() {
+    document.getElementById("navLinks").classList.toggle("show");
+  }
+
   /* ===============================
      TOP 3 NOTIFICATIONS (SLIDER)
   =============================== */
@@ -102,9 +119,11 @@
         return;
       }
 
+      const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+
       container.innerHTML = data.notifications
         .map(n => `
-          <a href="${n.url || '#'}" target="_blank">
+          <a href="${isLoggedIn ? (n.url || '#') : 'student-login.html'}" target="_blank">
             ${n.description}
           </a>
         `)
@@ -112,6 +131,50 @@
     })
     .catch(err => console.error("Top 3 fetch error:", err));
 
+// Popup Notification
+document.addEventListener("DOMContentLoaded", async () => {
+  // Check if popup was already closed in this session
+  console.log("Checking popupClosed status:", localStorage.getItem("popupClosed"));
+  // Temporarily disabled for testing
+  // if (localStorage.getItem("popupClosed") === "true") {
+  //   document.getElementById("popupModal").style.display = "none";
+  //   return;
+  // }
+
+  try {
+    console.log("Fetching popup...");
+    const res = await fetch("/api/notifications/get-popup");
+    console.log("Fetch response status:", res.status);
+    const data = await res.json();
+    console.log("Popup data:", data);
+    const popupModal = document.getElementById("popupModal");
+    const popupImage = document.getElementById("popupImage");
+    const popupLink = document.getElementById("popupLink");
+
+    if (data.success && data.popup) {
+      console.log("popup",data.popup);
+      popupImage.src = data.popup.img_path;  // This sets the src to /uploads/popups/filename
+      popupLink.href = "student-login.html";
+
+      // Show the popup content now that it's loaded
+      document.getElementById("popupContent").style.display = "block";
+
+      // Close button
+      document.getElementById("popupClose").addEventListener("click", () => {
+        popupModal.style.display = "none";
+        // Block future popups
+        localStorage.setItem("popupClosed", "true");
+      });
+    } else {
+      // No popup, hide the modal
+      popupModal.style.display = "none";
+    }
+  } catch (err) {
+    console.error("Failed to load popup:", err);
+    // On error, hide the modal
+    document.getElementById("popupModal").style.display = "none";
+  }
+});
 
   /* ===============================
      TOP 10 NOTIFICATIONS (LIST)
@@ -128,10 +191,12 @@
         return;
       }
 
+      const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+      
       list.innerHTML = data.notifications
         .map(n => `
           <li>
-            <a href="${n.url || '#'}" target="_blank">
+            <a href="${isLoggedIn ? (n.url || '#') : 'student-login.html'}" target="_blank">
               ${n.description}
             </a>
           </li>
@@ -139,6 +204,19 @@
         .join("");
     })
     .catch(err => console.error("Top 10 fetch error:", err));
+    const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+  const authLink = document.getElementById("auth-link");
+
+  if (isLoggedIn) {
+    authLink.innerHTML = `<a href="student-login.html" onclick="logout()">Logout</a>`;
+  } else {
+    authLink.innerHTML = `<a href="student-login.html">Login</a>`;
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "student-login.html";
+  }
 </script>
 
 </body>

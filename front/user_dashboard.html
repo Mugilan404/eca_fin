@@ -6,15 +6,27 @@
   <title>Elumalai's Chemistry Academy | User Dashboard</title>
 
   <link rel="stylesheet" href="user_dashboard.css">
-  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+  <link rel="icon" href="img/logo.png" type="image/x-icon">
 </head>
+
+<!-- Popup Modal -->
+<div id="popupModal" style="display:block;">
+  <div id="popupOverlay"></div>
+  <div id="popupContent" style="display:none;">
+    <a id="popupLink" href="#" target="_blank">
+      <img id="popupImage" src="" alt="Popup" />
+    </a>
+    <button id="popupClose">&times;</button>
+  </div>
+</div>
+
 <body>
 
 <!-- 🔹 Header -->
 <header>
   <nav class="navbar">
     <div class="logo">
-      <img src="assets/images/logo.png" alt="Logo">
+      <img src="img/logo.png" alt="Logo">
       <span>Elumalai's Chemistry Academy</span>
     </div>
 
@@ -24,11 +36,15 @@
       <li><a href="user_dashboard.html" class="active">Dashboard</a></li>
       <li><a href="study_materials.html">Study Materials</a></li>
         <li><a href="online_test.html">Online Test</a></li>
+        <li><a href="online_class.html">Online Class</a></li>
       <li><a href="student-login.html" id="logoutBtn">Logout</a></li>
     </ul>
   </nav>
 </header>
-
+<!-- 🔔 Sliding Notifications -->
+  <div class="notification-bar">
+    <marquee id="topNotifications" behavior="scroll" direction="left"></marquee>
+  </div>
 <!-- 🔹 Main Dashboard -->
 <main class="dashboard-container">
 
@@ -63,10 +79,47 @@
 
 <!-- 🔹 Footer -->
 <footer>
+  <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
   <p>© 2026 Elumalai's Chemistry Academy. All rights reserved.</p>
 </footer>
 
 <script>
+// Popup Notification
+document.addEventListener("DOMContentLoaded", async () => {
+  // Check if popup was already closed in this session
+  /*if (localStorage.getItem("popupClosed") === "true") {
+    document.getElementById("popupModal").style.display = "none";
+    return;
+  }*/
+
+  try {
+    const res = await fetch("/api/notifications/get-popup");
+    const data = await res.json();
+    const popupModal = document.getElementById("popupModal");
+    const popupImage = document.getElementById("popupImage");
+    const popupLink = document.getElementById("popupLink");
+
+    if (data.success && data.popup) {
+      popupImage.src = data.popup.img_path;
+      popupLink.href = data.popup.redirect_url || "#";
+
+      // Show the popup content
+      document.getElementById("popupContent").style.display = "block";
+
+      // Close button
+      document.getElementById("popupClose").addEventListener("click", () => {
+        popupModal.style.display = "none";
+        localStorage.setItem("popupClosed", "true");
+      });
+    } else {
+      popupModal.style.display = "none";
+    }
+  } catch (err) {
+    console.error("Failed to load popup:", err);
+    document.getElementById("popupModal").style.display = "none";
+  }
+});
+
 /* =============================
    MOBILE MENU
 ============================= */
@@ -101,10 +154,9 @@ async function loadBatches() {
     const container = document.getElementById("batchContainer");
 
     if (data.batches.length === 0) {
-      container.innerHTML = "<p>No batches purchased yet.</p>";
+      container.innerHTML = "<p>No batches purchased yet.Take a look at available batches.</p><p><a href='study_materials.html'>Study Materials</a> | <a href='online_test.html'>Online Tests</a> | <a href='online_class.html'>Online Classes</a></p>";
       return;
     }
-
     data.batches.forEach(batch => {
       container.innerHTML += `
         <div class="batch-card">
@@ -121,6 +173,28 @@ async function loadBatches() {
       "⚠ Error loading batches. Please try again later.";
   }
 }
+fetch("/api/notifications/top3")
+    .then(res => res.json())
+    .then(data => {
+      if (!data.success) return;
+
+      const container = document.getElementById("topNotifications");
+
+      if (!data.notifications.length) {
+        container.innerHTML = "<span>No notifications</span>";
+        return;
+      }
+
+      container.innerHTML = data.notifications
+        .map(n => `
+          <a href="${n.url || '#'}" target="_blank">
+            ${n.description}
+          </a>
+        `)
+        .join(" | ");
+    })
+    .catch(err => console.error("Top 3 fetch error:", err));
+
 
 /* =============================
    FETCH TEST HISTORY
@@ -184,8 +258,8 @@ function openBatch(batchId, type) {
     window.location.href = `materials.html?batch_id=${batchId}`;
   } else if (type === "Tests") {
     window.location.href = `testlist.html?batch_id=${batchId}`;
-  } else {
-    console.error("Invalid batch type");
+  } else if (type === "Classes") {
+    window.location.href = `ClassDetails.html?batch_id=${batchId}`;
   }
 }
 

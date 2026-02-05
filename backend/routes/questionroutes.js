@@ -11,6 +11,12 @@ const uploadImages = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
+// upload multiple videos (larger size for videos)
+const uploadVideos = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 100 * 1024 * 1024 } // 100MB
+});
+
 // upload multiple images
 router.post(
   "/upload-images",
@@ -18,6 +24,15 @@ router.post(
   uploadImages.array("images", 50),
   questionController.uploadQuestionImages
 );
+
+// upload multiple videos
+router.post(
+  "/upload-videos",
+  auth,
+  uploadVideos.array("videos", 20),
+  questionController.uploadQuestionVideos
+);
+
 router.post(
   "/upload/:test_id",
   auth,

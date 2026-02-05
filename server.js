@@ -56,6 +56,9 @@ console.log("✅ enroll routes loaded");
 const notificationRoutes = require("./backend/routes/notificationroutes");
 app.use("/api/notifications", notificationRoutes);
 console.log("✅ notification routes loaded");
+app.use("/api/classes", require("./backend/routes/classroutes"));
+console.log("✅ class routes loaded");
+
 /* =====================================================
    SPA / 404 FALLBACK
 ===================================================== */

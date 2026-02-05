@@ -19,14 +19,17 @@ router.post(
 );
 
 router.get("/batch/:batchId", authMiddleware, testController.getTestsByBatch);
-
+router.get("/questions/:testId",  testController.getTestQuestions);
 /* ===== SUBMIT TEST ===== */
 router.post(
   "/submit",
   authMiddleware,
   testController.submitTest
 );
-
+router.put(
+  "/edit-question",
+  testController.editTestQuestion
+);
 /* ===== GET TEST RESULT ===== */
 router.get(
   "/result/:attemptId",

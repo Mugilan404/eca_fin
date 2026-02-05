@@ -70,7 +70,19 @@ exports.getTestBatches = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+exports.getClassBatches = async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT * FROM batch
+      WHERE batch_for ='Classes'
+      ORDER BY created_at DESC
+    `);
 
+    res.json({ success: true, batches: rows });
+  } catch (err) {
+    res.status(500).json({ success: false });
+  }
+};
 /* ================= MY BATCHES ================= */
 exports.getMyBatches = async (req, res) => {
   try {

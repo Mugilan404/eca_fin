@@ -5,17 +5,20 @@
   <title>Enroll | Elumalai's Chemistry Academy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="enroll.css">
+  <link rel="icon" href="img/logo.png" type="image/x-icon">
 </head>
 
 <body>
 
 <!-- ===== HEADER (UNCHANGED) ===== -->
 <header class="main-header">
-  <div class="logo">Elumalai's Chemistry Academy</div>
-  <nav>
-    <a href="dashboard.html">Dashboard</a>
+  <div class="logo">
+        <img src="img/logo.png" alt="ChemGuide Logo">
+        <span>Elumalai's Chemistry Academy</span>
+      </div>
+    <nav>
     <a href="batches.html">Batches</a>
-    <a href="logout.html">Logout</a>
+    <a id="auth-link"></a>
   </nav>
 </header>
 
@@ -73,7 +76,7 @@
       <p class="qr-title">Scan & Pay</p>
       <img src="img/qr.jpeg" alt="GPay QR">
       <p class="qr-note">
-        Pay the course fee and upload the payment screenshot below
+        Pay the course fee to the upi sanaelumalai93@oksbi and upload the payment screenshot below
       </p>
     </div>
 
@@ -98,6 +101,7 @@
 
 <!-- ===== FOOTER (UNCHANGED) ===== -->
 <footer class="main-footer">
+  <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
   <p>© 2026 Elumalai's Chemistry Academy. All Rights Reserved.</p>
 </footer>
 
@@ -105,7 +109,19 @@
 /* ================= AUTH ================= */
 const token = localStorage.getItem("token");
 if (!token) location.href = "login.html";
+const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+  const authLink = document.getElementById("auth-link");
 
+  if (isLoggedIn) {
+    authLink.innerHTML = `<a href="user_dashboard.html" onclick="logout()">Dashboard</a>`;
+  } else {
+    authLink.innerHTML = `<a href="student-login.html">Login</a>`;
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "student-login.html";
+  }
 /* ================= PARAM ================= */
 const batchId = new URLSearchParams(window.location.search).get("batch_id");
 if (!batchId) {

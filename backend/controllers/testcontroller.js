@@ -239,3 +239,108 @@ console.log("Attempt Rows:", attemptRows);
     });
   }
 };
+
+exports.getTestQuestions = async (req, res) => {
+  try {
+    const { testId } = req.params;
+
+    console.log("Fetching questions for test ID:", testId);
+
+    /* ===== Verify test exists ===== */
+    const [testRows] = await db.execute(
+      "SELECT test_id FROM tests WHERE test_id = ?",
+      [testId]
+    );
+
+    if (testRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Test not found"
+      });
+    }
+
+    /* ===== Fetch questions (question_id used as serial) ===== */
+    const [questions] = await db.execute(
+      `SELECT * 
+       FROM questions 
+       WHERE test_id = ?
+       ORDER BY question_id ASC`,
+      [testId]
+    );
+
+    return res.json({
+      success: true,
+      questions
+    });
+
+  } catch (error) {
+    console.error("Error fetching test questions:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+exports.editTestQuestion = async (req, res) => {
+  try {
+    console.log("Edit Test Question Request Body:", req.body);
+    const { test_id, question_id, field, new_value } = req.body;
+    console.log("Edit Question Payload:", req.body);
+    /* ===== Basic validation ===== */
+    if (!test_id || !question_id || !field || new_value === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields"
+      });
+    }
+
+    /* ===== Allowed fields (VERY IMPORTANT for security) ===== */
+    const allowedFields = [
+      "question_type",
+      "question_text",
+      "question_image",
+      "option_a_type",
+      "option_a_text",
+      "option_a_image",
+      "option_b_type",
+      "option_b_text",
+      "option_b_image",
+      "option_c_type",
+      "option_c_text",
+      "option_c_image",
+      "option_d_type",
+      "option_d_text",
+      "option_d_image",
+      "correct_answer",
+      "reference_text"
+    ];
+    console.log("Field to update:", field);
+    if (!allowedFields.includes(field)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid field selected"
+      });
+    }
+
+    /* ===== Dynamic update ===== */
+    const query = `
+      UPDATE questions
+      SET ${field} = ?
+      WHERE question_id = ? AND test_id = ?
+    `;
+
+    await db.execute(query, [new_value, question_id, test_id]);
+
+    return res.json({
+      success: true,
+      message: "Question updated successfully"
+    });
+
+  } catch (error) {
+    console.error("Error editing test question:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};

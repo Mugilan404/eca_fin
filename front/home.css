@@ -12,116 +12,60 @@ body {
   line-height: 1.6;
 }
 
+#popupModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+}
+
+#popupOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+}
+
+#popupContent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90%;
+  max-height: 80%;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+#popupContent img {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+#popupClose {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: #003366;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
 /* Notification Bar */
 .notification-bar {
   background: #ffcc00;
   padding: 8px;
   font-weight: bold;
-}
-/* ===== Navbar / Header ===== */
-header {
-  background: rgba(0, 0, 0, 0.7);
-  padding: 12px 30px;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-}
-
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-}
-.logo img {
-  height: 40px;
-  margin-right: 8px;
-}
-.logo span {
-  color: #fff;
-  font-size: 22px;
-  font-weight: bold;
-}
-
-.nav-links {
-  display: flex;
-  list-style: none;
-}
-.nav-links li {
-  margin-left: 24px;
-}
-.nav-links a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 500;
-  transition: color 0.3s;
-}
-.nav-links a:hover,
-.nav-links .active {
-  color: #fbc531;
-}
-
-/* Mobile Nav Toggle Icon */
-.menu-toggle {
-  display: none;
-  font-size: 26px;
-  color: #fff;
-  cursor: pointer;
-  background: none;
-  border: none;
-}
-/* Side Menu */
-.side-menu {
-  position: fixed;
-  top: 0;
-  left: -260px;
-  width: 250px;
-  height: 100%;
-  background: #1f2937;
-  padding-top: 60px;
-  transition: 0.3s ease;
-  z-index: 2000;
-}
-
-.side-menu a {
-  display: block;
-  padding: 14px 20px;
-  color: #fff;
-  text-decoration: none;
-  font-size: 16px;
-}
-
-.side-menu a:hover {
-  background: #374151;
-}
-
-.side-menu.open {
-  left: 0;
-}
-
-/* Menu Button */
-.menu-btn {
-  position: fixed;
-  top: 15px;
-  left: 15px;
-  font-size: 26px;
-  cursor: pointer;
-  z-index: 2100;
-  color: #111;
-}
-
-/* Close Button */
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  font-size: 28px;
-  cursor: pointer;
-  color: #fff;
 }
 
 .notification-bar a {
@@ -130,24 +74,79 @@ header {
   text-decoration: none;
 }
 
-/* Header */
-.header {
+header {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 12px 30px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+.logo img {
+    height: 40px;
+    margin-right: 8px;
+}
+.logo span {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+}
+.nav-links li {
+    margin-left: 24px;
+}
+.nav-links a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+.nav-links a:hover,
+.nav-links .active {
+    color: #fbc531;
+}
+
+/* Mobile Nav Toggle Icon */
+.menu-toggle {
+    display: none;
+    font-size: 26px;
+    color: #fff;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+
+/* ===== Page Sections ===== */
+.page-header {
   text-align: center;
   padding: 40px 20px;
   background: #003366;
   color: white;
 }
 
-.header h1 {
+.page-header h1 {
   font-size: 32px;
 }
 
-.header p {
+.page-header p {
   margin-top: 10px;
   font-size: 18px;
 }
 
-/* About */
 .about {
   padding: 30px 20px;
   background: #f4f6f8;
@@ -155,7 +154,6 @@ header {
   font-size: 18px;
 }
 
-/* Teaching Approach */
 .approach {
   padding: 40px 60px;
 }
@@ -174,7 +172,6 @@ header {
   margin-bottom: 8px;
 }
 
-/* Features */
 .features {
   padding: 40px 20px;
   background: #eef3f8;
@@ -203,7 +200,6 @@ header {
   box-shadow: 0 0 5px rgba(0,0,0,0.1);
 }
 
-/* Notifications */
 .notifications {
   padding: 40px 60px;
 }
@@ -231,7 +227,6 @@ header {
   text-decoration: underline;
 }
 
-/* Footer */
 .footer {
   text-align: center;
   padding: 20px;
@@ -239,161 +234,50 @@ header {
   color: white;
   margin-top: 40px;
 }
-/* ===============================
-   MOBILE VIEW ONLY
-   =============================== */
+
+/* ===== Responsive Styles ===== */
 @media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+    footer{
+        position: relative;
+    }
+    .nav-links {
+        position: absolute;
+        right: 0;
+        top: 60px;
+        background: rgba(0,0,0,0.95);
+        flex-direction: column;
+        width: 220px;
+        display: none;
+        padding: 20px;
+        border-radius: 0 0 10px 10px;
+        z-index: 999;
+    }
 
-  /* ===== Header / Navbar ===== */
-  header {
-    padding: 10px 16px;
-  }
+    .nav-links.show {
+        display: flex;
+    }
 
-  .logo span {
-    font-size: 18px;
-  }
-
-  .nav-links {
-    display: none;
-    flex-direction: column;
-    background: rgba(0, 0, 0, 0.95);
-    position: absolute;
-    top: 60px;
-    right: 10px;
-    width: 220px;
-    padding: 16px;
-    border-radius: 8px;
-  }
-
-  .nav-links.show {
-    display: flex;
-  }
-
-  .nav-links li {
-    margin: 12px 0;
-  }
-
-  .menu-toggle {
-    display: block;
-  }
-
-  /* ===== Notification Bar ===== */
-  .notification-bar {
-    font-size: 14px;
-    padding: 6px;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
-
-  .notification-bar a {
-    margin-right: 20px;
-    display: inline-block;
-  }
-
-  /* ===== Header Section ===== */
-  .header {
-    padding: 30px 15px;
-  }
-
-  .header h1 {
-    font-size: 24px;
-  }
-
-  .header p {
-    font-size: 15px;
-  }
-
-  /* ===== About Section ===== */
-  .about {
-    padding: 20px 15px;
-    font-size: 16px;
-  }
-
-  /* ===== Teaching Approach ===== */
-  .approach {
-    padding: 25px 18px;
-  }
-
-  .approach h2 {
-    font-size: 20px;
-  }
-
-  .approach ul {
-    padding-left: 16px;
-  }
-
-  .approach li {
-    font-size: 15px;
-  }
-
-  /* ===== Features ===== */
-  .features {
-    padding: 30px 15px;
-  }
-
-  .features h2 {
-    font-size: 22px;
-  }
-
-  .feature-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-grid div {
-    font-size: 15px;
-  }
-
-  /* ===== Notifications ===== */
-  .notifications {
-    padding: 25px 18px;
-  }
-
-  .notifications h2 {
-    font-size: 20px;
-  }
-
-  .notifications li {
-    font-size: 15px;
-  }
-
-  /* ===== Footer ===== */
-  .footer {
-    font-size: 14px;
-    padding: 16px;
-  }
-
-  /* ===== Side Menu ===== */
-  .side-menu {
-    width: 220px;
-  }
-
-  .side-menu a {
-    font-size: 15px;
-    padding: 12px 18px;
-  }
+    .nav-links li {
+        margin: 12px 0;
+    }
 }
+
 @media (max-width: 480px) {
-  .header h1 {
-    font-size: 20px;
-  }
-  .header p {
-    font-size: 14px;
-  }
-  .approach h2,
-  .notifications h2 {
-    font-size: 18px;
-  }
-  .feature-grid div {
-    font-size: 14px;
-  }
-  .side-menu a {
-    font-size: 14px;
-  }
-  .footer {
-    font-size: 13px;
-  }
-  .approach,
-  .notifications {
-    padding: 20px 12px;
-  }
+    .auth-container {
+        margin: 30px 15px;
+        padding: 20px;
+    }
+
+    .form-group input,
+    .form-group select {
+        font-size: 14px;
+    }
+
+    button.btn {
+        font-size: 14px;
+        padding: 10px;
+    }
 }

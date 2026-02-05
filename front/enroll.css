@@ -28,6 +28,21 @@ body {
 .main-header nav a:hover {
   text-decoration: underline;
 }
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    height: 40px;
+    margin-right: 8px;
+}
+
+.logo span {
+    color: #fff;
+    font-size: 22px;
+    font-weight: bold;
+}
 
 /* ===== FOOTER ===== */
 .main-footer {

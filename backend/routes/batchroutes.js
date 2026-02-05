@@ -16,6 +16,9 @@ router.get("/materials", batchController.getMaterialBatches);
 /* TEST BATCHES */
 router.get("/tests", batchController.getTestBatches);
 
+/* CLASS BATCHES */
+router.get("/classes", batchController.getClassBatches);
+
 /* USER BATCHES */
 router.get("/my-batches", authMiddleware, batchController.getMyBatches);
 

@@ -5,7 +5,7 @@
   <title>View Material | Elumalai's Chemistry Academy</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="icon" href="assets/images/logo.png" />
+  <link rel="icon" href="img/logo.png" />
   <link rel="stylesheet" href="materials_view.css" />
 
   <!-- PDF.js -->
@@ -55,7 +55,7 @@
 <header>
   <nav class="navbar">
     <div class="logo">
-      <img src="assets/images/logo.png" alt="ChemGuide Logo">
+      <img src="img/logo.png" alt="ChemGuide Logo">
       <span>Elumalai's Chemistry Academy</span>
     </div>
 
@@ -65,15 +65,15 @@
       <li><a href="user_dashboard.html">Dashboard</a></li>
       <li><a href="study_materials.html">Study Materials</a></li>
         <li><a href="online_test.html">Online Test</a></li>
-      <li><a href="student-login.html">Logout</a></li>
+      <li id="auth-link"></li>
     </ul>
   </nav>
 </header>
 
 <!-- 🔹 Page Header -->
 <section class="page-header">
-  <h1>📄 Study Material</h1>
-  <p>PDF Viewer</p>
+  <h1>Sample Study Material</h1>
+  <p>Enroll to unlock the complete course material. All materials will be shared within 2 working days. </p>
 </section>
 
 <!-- 🔹 PDF Section -->
@@ -84,6 +84,7 @@
 
 <!-- 🔹 Footer (COPIED AS-IS) -->
 <footer>
+  <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
   <p>© 2026 Elumalai's Chemistry Academy. All rights reserved.</p>
 </footer>
 
@@ -111,7 +112,22 @@ if (!materialId) {
   viewer.innerHTML = "<p>❌ Invalid material</p>";
   throw new Error("Material ID missing");
 }
+/* =============================
+   AUTH LINK TOGGLE
+============================= */
+  const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+  const authLink = document.getElementById("auth-link");
 
+  if (isLoggedIn) {
+    authLink.innerHTML = `<a href="student-login.html" onclick="logout()">Logout</a>`;
+  } else {
+    authLink.innerHTML = `<a href="student-login.html">Login</a>`;
+  }
+
+  function logout() {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "student-login.html";
+  }
 /* =============================
    CHECK ACCESS & LOAD PDF
 ============================= */

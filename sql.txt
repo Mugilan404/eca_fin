@@ -1,0 +1,200 @@
+const mysql = require("mysql2/promise");
+
+async function setupDatabase() {
+  const connection = await mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",        // 🔴 change if needed
+    multipleStatements: true
+  });
+
+  try {
+    console.log("Connected to MySQL");
+
+    const sql = `
+    CREATE DATABASE IF NOT EXISTS ECA;
+    USE ECA;
+
+    /* ================= USERS ================= */
+    CREATE TABLE IF NOT EXISTS users (
+      user_id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(150) NOT NULL,
+      email VARCHAR(200) NOT NULL UNIQUE,
+      contact_no VARCHAR(10) NOT NULL,
+      designation VARCHAR(100) NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      role ENUM('admin', 'student') DEFAULT 'student',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    /* ================= BATCH ================= */
+    CREATE TABLE IF NOT EXISTS batch (
+      batch_id INT AUTO_INCREMENT PRIMARY KEY,
+      batch_name VARCHAR(150) NOT NULL,
+      batch_for ENUM('Materials','Tests') DEFAULT 'Tests',
+      start_date DATE,
+      end_date DATE,
+      batch_price INT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+
+    /* ================= MATERIALS ================= */
+    CREATE TABLE IF NOT EXISTS Materials (
+      material_id INT AUTO_INCREMENT PRIMARY KEY,
+      batch_id INT,
+      material_name VARCHAR(150) NOT NULL,
+      material_category VARCHAR(25) NOT NULL,
+      material_path VARCHAR(255) NOT NULL,
+      uploaded_by INT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (batch_id) REFERENCES batch(batch_id),
+      FOREIGN KEY (uploaded_by) REFERENCES users(user_id)
+    );
+
+    /* ================= TESTS ================= */
+    CREATE TABLE IF NOT EXISTS Tests (
+      test_id INT AUTO_INCREMENT PRIMARY KEY,
+      batch_id INT,
+      test_name VARCHAR(30) NOT NULL,
+      test_category VARCHAR(30) NOT NULL,
+      test_time INT NOT NULL,
+      total_questions INT NOT NULL,
+      created_by INT,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (batch_id) REFERENCES batch(batch_id),
+      FOREIGN KEY (created_by) REFERENCES users(user_id)
+    );
+
+    /* ================= QUESTIONS ================= */
+    CREATE TABLE IF NOT EXISTS Questions (
+      question_id INT AUTO_INCREMENT PRIMARY KEY,
+      test_id INT NOT NULL,
+      question_type ENUM('text','image') NOT NULL,
+      question_text TEXT,
+      question_image VARCHAR(255),
+
+      option_a_type ENUM('text','image') NOT NULL,
+      option_a_text TEXT,
+      option_a_image VARCHAR(255),
+
+      option_b_type ENUM('text','image') NOT NULL,
+      option_b_text TEXT,
+      option_b_image VARCHAR(255),
+
+      option_c_type ENUM('text','image') NOT NULL,
+      option_c_text TEXT,
+      option_c_image VARCHAR(255),
+
+      option_d_type ENUM('text','image') NOT NULL,
+      option_d_text TEXT,
+      option_d_image VARCHAR(255),
+
+      correct_answer ENUM('A','B','C','D') NOT NULL,
+      reference_text TEXT,
+      reference_video_url VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (test_id) REFERENCES Tests(test_id)
+    );
+
+    /* ================= ACCESS ================= */
+    CREATE TABLE IF NOT EXISTS access (
+      access_id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      batch_id INT NOT NULL,
+      payment_status ENUM('PENDING','SUCCESS','FAILED') DEFAULT 'PENDING',
+      paid_through ENUM('UPI','CARD','NET_BANKING','CASH','FREE') DEFAULT 'UPI',
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE KEY unique_user_batch (user_id, batch_id),
+      FOREIGN KEY (user_id) REFERENCES users(user_id),
+      FOREIGN KEY (batch_id) REFERENCES batch(batch_id)
+    );
+
+    /* ================= TEST ATTEMPTS ================= */
+    CREATE TABLE IF NOT EXISTS test_attempts (
+      attempt_id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT NOT NULL,
+      test_id INT NOT NULL,
+      total_questions INT,
+      correct_answers INT,
+      score INT,
+      time_taken INT,
+      started_at DATETIME,
+      submitted_at DATETIME,
+      FOREIGN KEY (user_id) REFERENCES users(user_id),
+      FOREIGN KEY (test_id) REFERENCES Tests(test_id)
+    );
+
+    /* ================= STUDENT ANSWERS ================= */
+    CREATE TABLE IF NOT EXISTS student_answers (
+      answer_id INT AUTO_INCREMENT PRIMARY KEY,
+      attempt_id INT NOT NULL,
+      question_id INT NOT NULL,
+      selected_option ENUM('A','B','C','D'),
+      is_correct BOOLEAN,
+      FOREIGN KEY (attempt_id) REFERENCES test_attempts(attempt_id),
+      FOREIGN KEY (question_id) REFERENCES Questions(question_id)
+    );
+
+    /* ================= MATERIAL LOGS ================= */
+    CREATE TABLE IF NOT EXISTS material_logs (
+      log_id INT AUTO_INCREMENT PRIMARY KEY,
+      user_id INT,
+      material_id INT,
+      viewed_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(user_id),
+      FOREIGN KEY (material_id) REFERENCES Materials(material_id)
+    );
+
+    /* ================= CLASSES ================= */
+    CREATE TABLE IF NOT EXISTS classes (
+      class_id INT AUTO_INCREMENT PRIMARY KEY,
+      batch_id INT NOT NULL,
+      topic VARCHAR(255) NOT NULL,
+      class_date DATE NOT NULL,
+      class_time VARCHAR(50) NOT NULL,
+      joinclass VARCHAR(500) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (batch_id) REFERENCES batch(batch_id)
+    );
+
+    /* ================= NOTIFICATIONS ================= */
+    CREATE TABLE IF NOT EXISTS notifications (
+      notification_id INT AUTO_INCREMENT PRIMARY KEY,
+      description TEXT NOT NULL,
+      url VARCHAR(255),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+CREATE TABLE IF NOT EXISTS popup_notifications (
+  popup_id INT AUTO_INCREMENT PRIMARY KEY,
+  img_path VARCHAR(255) NOT NULL,
+  redirect_url VARCHAR(255) NOT NULL,
+  is_active TINYINT(1) DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+    /* ================= ADMIN USER (SAFE INSERT) ================= */
+    INSERT IGNORE INTO users (
+      name, email, contact_no, designation, password_hash, role
+    ) VALUES (
+      'Admin',
+      'admin@eca.com',
+      '9442532471',
+      'Administrator',
+      '$2b$10$vTPk/0z.zK7vsCMPkqSgSeeGqfbOAGZ2qlqkATrYYkbBsbGbESJza',
+      'admin'
+    );
+    `;
+
+    await connection.query(sql);
+    console.log("✅ Database & tables created successfully");
+
+  } catch (err) {
+    console.error("❌ DB setup error:", err);
+  } finally {
+    await connection.end();
+  }
+}
+
+setupDatabase();

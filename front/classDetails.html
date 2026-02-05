@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Batch Classes | Elumalai's Chemistry Academy</title>
+
+  <link rel="stylesheet" href="classDetails.css" />
+  <link rel="icon" href="img/logo.png" type="image/x-icon">
+  <style>
+    /* Minimal styles for cards */
+    .material-card {
+      border: 1px solid #ddd;
+      padding: 16px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      background: #f9f9f9;
+      box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+    }
+    .material-card h3 {
+      margin: 0 0 8px 0;
+    }
+    .material-card p {
+      margin: 4px 0;
+    }
+    .material-card a.btn {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 12px;
+      background: #007bff;
+      color: #fff;
+      text-decoration: none;
+      border-radius: 4px;
+    }
+    .material-card a.btn:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- 🔹 Header -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <span class="menu-toggle" id="menu-toggle">&#9776;</span>
+
+    <ul class="nav-links" id="nav-links">
+      <li><a href="home.html">Home</a></li>
+      <li><a href="user_dashboard.html">Dashboard</a></li>
+    </ul>
+  </nav>
+</header>
+
+<!-- 🔹 Page Header -->
+<section class="page-header">
+  <h1>🎥 Live & Scheduled Classes</h1>
+  <p>Classes scheduled for this batch</p>
+</section>
+
+<!-- 🔹 Classes Section -->
+<section class="materials-section">
+  <div id="class-list" class="materials-list">
+    <p>Loading classes...</p>
+  </div>
+</section>
+
+<!-- 🔹 Footer -->
+<footer>
+  <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
+  <p>© 2026 Elumalai's Chemistry Academy</p>
+</footer>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const batchId = params.get("batch_id");
+const container = document.getElementById("class-list");
+
+if (!batchId) {
+  container.innerHTML = "<p>❌ Invalid batch selected.</p>";
+} else {
+  loadClasses();
+}
+
+async function loadClasses() {
+  try {
+    const res = await fetch(`/api/classes/batch/${batchId}`);
+    const data = await res.json();
+
+    console.log("Backend response:", data);
+    container.innerHTML = "";
+
+    if (!data.success || !data.class) {
+      container.innerHTML = "<p>No classes scheduled for this batch yet.</p>";
+      return;
+    }
+
+    // Wrap single class object in an array to use forEach
+    const classesArray = [data.class];
+
+    classesArray.forEach(cls => {
+      const card = document.createElement("div");
+      card.className = "material-card";
+
+      card.innerHTML = `
+        <h3>${cls.topic}</h3>
+        <p class="date">📅 Date: ${new Date(cls.class_date).toLocaleDateString()}</p>
+        <p class="time">⏰ Time: ${cls.class_time}</p>
+        <a href="${cls.joinclass}" target="_blank" class="btn">🔗 Join Class</a>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error("Error loading classes:", err);
+    container.innerHTML = "<p>❌ Error loading classes.</p>";
+  }
+}
+</script>
+
+</body>
+</html>

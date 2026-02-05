@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Popup</title>
+
+<link rel="stylesheet" href="grant_access.css">
+<link rel="icon" href="img/logo.png" type="image/x-icon" />
+<style>
+/* ===== Form Container ===== */
+.page-container {
+  max-width: 700px;
+  margin: 70px auto;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+h2 {
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+form label {
+  display: block;
+  margin-top: 14px;
+  font-weight: 600;
+}
+
+form input {
+  width: 100%;
+  padding: 12px;
+  margin-top: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+}
+
+button {
+  margin-top: 22px;
+  padding: 12px;
+  color: #fff;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #0056b3;
+}
+
+.message {
+  margin-top: 15px;
+  text-align: center;
+  font-weight: 600;
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 768px) {
+  .page-container {
+    margin: 20px 12px;
+    padding: 20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/logo.png" alt="Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
+
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin_dashboard.html">Dashboard</a></li>
+      <li><a href="#" class="active">Create Popup</a></li>
+      <li><a href="admin-login.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
+
+<div class="page-container">
+  <h2>Create Popup Notification</h2>
+
+  <form id="popupForm" enctype="multipart/form-data">
+
+    <label>Popup Image</label>
+    <input type="file" name="image" accept="image/*" required>
+
+    <label>Redirect URL (optional)</label>
+    <input type="url" name="redirect_url" placeholder="https://example.com">
+
+    <button type="submit">Upload Popup</button>
+  </form>
+
+  <p id="msg" class="message"></p>
+</div>
+
+<footer>
+  For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com<br>
+  © 2026 Elumalai's Chemistry Academy. All rights reserved.
+</footer>
+
+<script>
+/* ===== Mobile Menu ===== */
+function toggleMenu() {
+  document.getElementById("navLinks").classList.toggle("show");
+}
+
+const token = localStorage.getItem("token");
+if (!token) {
+  alert("Session expired");
+  window.location.href = "admin-login.html";
+}
+
+document.getElementById("popupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const formData = new FormData(e.target);
+
+  try {
+    const res = await fetch("/api/notifications/create-popup", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer " + token
+      },
+      body: formData
+    });
+
+    const data = await res.json();
+    const msg = document.getElementById("msg");
+    if (data.success) {
+      msg.style.color = "green";
+      msg.innerText = "✅ Popup uploaded successfully";
+      window.location.href = "admin_dashboard.html";
+      e.target.reset();
+    } else {
+      msg.style.color = "red";
+      msg.innerText = data.message || "Upload failed";
+    }
+  } catch {
+    document.getElementById("msg").innerText =
+      "❌ Server error";
+  }
+});
+</script>
+
+</body>
+</html>

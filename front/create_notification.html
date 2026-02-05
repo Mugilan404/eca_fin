@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <title>Create Notification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="grant_access.css" />
+  <link rel="icon" href="img/logo.png" type="image/x-icon" />
   <style>
     body {
       font-family: Arial, sans-serif;
       background: #f4f6f8;
-      padding: 40px;
     }
 
     .container {
@@ -16,6 +18,12 @@
       padding: 25px;
       border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 450px;
+    margin: 60px auto;
+    padding: 25px;
+    background-color: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    border-radius: 12px;
     }
 
     h2 {
@@ -54,7 +62,24 @@
   </style>
 </head>
 <body>
+<!-- ===== Header ===== -->
+<header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="img/logo.png" alt="ECA Logo">
+      <span>Elumalai's Chemistry Academy</span>
+    </div>
 
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <ul class="nav-links" id="navLinks">
+      <li><a href="admin_dashboard.html">Dashboard</a></li>
+      <li><a href="create-batch.html">Create Batch</a></li>
+      <li><a class="active" href="create_notification.html">Create Notification</a></li>
+      <li><a href="student-login.html">Logout</a></li>
+    </ul>
+  </nav>
+</header>
 <div class="container">
   <h2>Create Notification</h2>
 
@@ -68,7 +93,10 @@
     <button type="submit">Post Notification</button>
   </form>
 </div>
-
+<footer>
+  <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
+  © 2026 Elumalai's Chemistry Academy. All Rights Reserved.
+</footer>
 <script>
   document.getElementById("notificationForm").addEventListener("submit", async e => {
     e.preventDefault();

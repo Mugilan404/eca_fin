@@ -14,7 +14,12 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
+/* Notification Bar */
+.notification-bar {
+  background: #ffcc00;
+  padding: 8px;
+  font-weight: bold;
+}
 /* ===== Navbar / Header ===== */
 header {
   background: rgba(0, 0, 0, 0.7);

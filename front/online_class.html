@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Elumalai's Chemistry Academy | Online Tests</title>
+  <title>Online Classes | Elumalai's Chemistry Academy </title>
 
   <link rel="stylesheet" href="study_materials.css">
   <link rel="icon" href="img/logo.png" />
@@ -75,8 +75,8 @@
     <ul class="nav-links" id="nav-links">
       <li><a href="home.html">Home</a></li>
       <li><a href="study_materials.html">Study Materials</a></li>
-      <li><a href="online_test.html" class="active">Online Tests</a></li>
-      <li><a href="online_class.html" >Online Classes</a></li>
+      <li><a href="online_test.html" >Online Tests</a></li>
+      <li><a href="online_class.html" class="active">Online Classes</a></li>
       <li id="auth-link"></li>
     </ul>
   </nav>
@@ -84,8 +84,8 @@
 
 <!-- HERO -->
 <section class="hero">
-  <h1> Online Test Batches</h1>
-  <p>Try our online tests and challenge yourself to achieve better results every time you practice.</p>
+  <h1>Online Class Batches</h1>
+ <p>Participate in our online classes to master chemistry concepts step by step with live guidance and practice sessions.</p>
 </section>
 
 <!-- BATCHES -->
@@ -105,9 +105,9 @@
 <script>
   const grid = document.getElementById("batches-grid");
 
-  async function loadTestBatches() {
+  async function loadClassBatches() {
     try {
-      const res = await fetch("/api/batch/tests");
+      const res = await fetch("/api/batch/classes");
       const data = await res.json();
 
       grid.innerHTML = "";
@@ -116,7 +116,7 @@
       const batches = data.batches || data;
 
       if (!batches.length) {
-        grid.innerHTML = "<p>No test batches available.</p>";
+        grid.innerHTML = "<p>No Classes batches available.</p>";
         return;
       }
 
@@ -130,8 +130,8 @@
           <p class="price">₹ ${batch.batch_price}</p>
           <p><strong>Start Date:</strong> ${new Date(batch.start_date).toLocaleDateString("en-IN")}</p>
           <p><strong>End Date:</strong> ${new Date(batch.end_date).toLocaleDateString("en-IN")}</p>
-          <a class="btn" href="testlist.html?batch_id=${batch.batch_id}">
-            View Tests
+          <a class="btn" href="enroll.html?batch_id=${batch.batch_id}">
+            Enroll class
           </a>
         `;
 
@@ -144,8 +144,7 @@
     }
   }
 
-  
-  // Mobile menu toggle
+ // Mobile menu toggle
   document.getElementById("menu-toggle").addEventListener("click", () => {
     document.getElementById("nav-links").classList.toggle("show");
   });
@@ -166,7 +165,8 @@
   } else {
     authLink.innerHTML = `<a href="student-login.html">Login</a>`;
   }
-  loadTestBatches();
+
+  loadClassBatches();
 </script>
 
 </body>

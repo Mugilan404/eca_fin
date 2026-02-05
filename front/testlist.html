@@ -6,7 +6,7 @@
   <title>Online Tests | Elumalai's Chemistry Academy</title>
 
   <link rel="stylesheet" href="materials.css" />
-  <link rel="icon" href="assets/images/logo.png" type="image/x-icon">
+  <link rel="icon" href="img/logo.png" type="image/x-icon">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
 <header>
   <nav class="navbar">
     <div class="logo">
-      <img src="assets/images/logo.png" alt="Logo">
+      <img src="img/logo.png" alt="Logo">
       <span>Elumalai's Chemistry Academy</span>
     </div>
 
@@ -24,7 +24,7 @@
     <ul class="nav-links">
       <li><a href="home.html">Home</a></li>
       <li><a href="batches.html">Batches</a></li>
-      <li><a href="user_dashboard.html">Dashboard</a></li>
+      <li id="auth-link"></li>
     </ul>
   </nav>
 </header>
@@ -44,6 +44,7 @@
 
 <!-- 🔹 Footer -->
 <footer>
+  <p> For Queries, contact: 9840608224 | Email: elumalaiphd@gmail.com</p>
   <p>© 2026 Elumalai's Chemistry Academy</p>
 </footer>
 
@@ -66,6 +67,31 @@ if (!batchId) {
   loadTests();
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  const menuToggle = document.getElementById("menu-toggle");
+  const navLinks = document.getElementById("nav-links");
+  const authLink = document.getElementById("auth-link");
+
+  if (menuToggle && navLinks) {
+    menuToggle.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+  }
+
+  // Login / Logout toggle
+  const isLoggedIn = localStorage.getItem("loggedIn") === "true";
+
+  if (authLink) {
+    if (isLoggedIn) {
+      authLink.innerHTML = `<a href="user_dashboard.html">Dashboard</a>`;
+    } else {
+      authLink.innerHTML = `<a href="student-login.html">Login</a>`;
+    }
+  }
+
+});
+  
 async function loadTests() {
   try {
     const res = await fetch(`/api/tests/batch/${batchId}`, {
@@ -116,6 +142,7 @@ async function loadTests() {
     container.innerHTML = "<p>❌ Error loading tests.</p>";
   }
 }
+
 </script>
 
 </body>

@@ -14,7 +14,7 @@
 <!-- ===== AUTH GUARD ===== -->
 <script>
 const token = localStorage.getItem("token");
-if (!token) window.location.href = "student-login.html";
+if (!token) window.location.href = "admin-login.html";
 </script>
 
 <!-- ===== Header ===== -->
@@ -30,18 +30,18 @@ if (!token) window.location.href = "student-login.html";
     <ul class="nav-links" id="navLinks">
       <li><a href="admin_dashboard.html">Dashboard</a></li>
       <li><a href="create-batch.html">Create Batch</a></li>
-      <li><a class="active" href="#">Add Images</a></li>
+      <li><a class="active" href="#">Add Videos</a></li>
       <li><a href="student-login.html">Logout</a></li>
     </ul>
   </nav>
 </header>
 
-<!-- ===== Upload Images ===== -->
+<!-- ===== Upload Videos ===== -->
 <div class="auth-container">
   <div class="auth-box">
-    <h2>Upload Question Images</h2>
+    <h2>Upload Question Videos</h2>
 
-    <form id="imageUploadForm" enctype="multipart/form-data">
+    <form id="videoUploadForm" enctype="multipart/form-data">
 
       <!-- Batch -->
       <div class="form-group">
@@ -59,14 +59,14 @@ if (!token) window.location.href = "student-login.html";
         </select>
       </div>
 
-      <!-- Images -->
+      <!-- Videos -->
       <div class="form-group">
-        <label>Select Images (Multiple)</label>
-        <input type="file" id="images" accept="image/*" multiple required>
-        <small>Image names must match CSV/XLSX (q1.png, optA.jpg)</small>
+        <label>Select Videos (Multiple)</label>
+        <input type="file" id="videos" accept="video/*" multiple required>
+        <small>Video names must match CSV/XLSX (q1.mp4, optA.mp4)</small>
       </div>
 
-      <button type="submit" class="btn">Upload Images</button>
+      <button type="submit" class="btn">Upload Videos</button>
     </form>
   </div>
 </div>
@@ -143,15 +143,15 @@ document.getElementById("batch_id").addEventListener("change", async function ()
   }
 });
 
-/* ===== Upload Images ===== */
-document.getElementById("imageUploadForm").addEventListener("submit", async e => {
+/* ===== Upload Videos ===== */
+document.getElementById("videoUploadForm").addEventListener("submit", async e => {
   e.preventDefault();
 
-  const batchId = batch_id.value;
-  const testId = test_id.value;
-  const images = document.getElementById("images").files;
+  const batchId = document.getElementById("batch_id").value;
+  const testId = document.getElementById("test_id").value;
+  const videos = document.getElementById("videos").files;
 
-  if (!batchId || !testId || images.length === 0) {
+  if (!batchId || !testId || videos.length === 0) {
     alert("All fields are required");
     return;
   }
@@ -160,12 +160,12 @@ document.getElementById("imageUploadForm").addEventListener("submit", async e =>
   formData.append("batch_id", batchId);
   formData.append("test_id", testId);
 
-  for (let img of images) {
-    formData.append("images", img);
+  for (let vid of videos) {
+    formData.append("videos", vid);
   }
 
   try {
-    const res = await fetch("/api/questions/upload-images", {
+    const res = await fetch("/api/questions/upload-videos", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + token
@@ -175,7 +175,7 @@ document.getElementById("imageUploadForm").addEventListener("submit", async e =>
 
     const data = await res.json();
     alert(data.message);
-
+    window.location.href = "admin_dashboard.html";
   } catch (err) {
     alert("Upload failed");
     console.error(err);

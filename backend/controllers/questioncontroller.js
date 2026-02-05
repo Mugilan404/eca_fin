@@ -307,3 +307,89 @@ exports.uploadQuestionImages = async (req, res) => {
     });
   }
 };
+
+/**
+ * Upload question videos to:
+ * uploads/questions/{batch_name}/{test_name}/videos/
+ */
+exports.uploadQuestionVideos = async (req, res) => {
+  try {
+    const { batch_id, test_id } = req.body;
+
+    if (!batch_id || !test_id) {
+      return res.status(400).json({
+        success: false,
+        message: "batch_id and test_id are required"
+      });
+    }
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "No videos uploaded"
+      });
+    }
+
+    /* 1️⃣ Fetch batch_name & test_name */
+    const [[test]] = await db.query(
+      `SELECT t.test_name, b.batch_name
+       FROM tests t
+       JOIN batch b ON t.batch_id = b.batch_id
+       WHERE t.test_id = ? AND b.batch_id = ?`,
+      [test_id, batch_id]
+    );
+
+    if (!test) {
+      return res.status(404).json({
+        success: false,
+        message: "Batch/Test not found"
+      });
+    }
+
+    const safeBatch = test.batch_name.replace(/\s+/g, "_");
+    const safeTest = test.test_name.replace(/\s+/g, "_");
+
+    /* 2️⃣ Destination folder */
+    const DEST_DIR = path.join(
+      __dirname,
+      `../uploads/questions/${safeBatch}/${safeTest}/videos`
+    );
+
+    if (!fs.existsSync(DEST_DIR)) {
+      fs.mkdirSync(DEST_DIR, { recursive: true });
+    }
+
+    /* 3️⃣ Save videos */
+    const savedVideos = [];
+
+    for (const file of req.files) {
+      const ext = path.extname(file.originalname);
+      const base = path.basename(file.originalname, ext);
+      const filename = `${base}${ext}`;
+
+      const fullPath = path.join(DEST_DIR, filename);
+
+      fs.writeFileSync(fullPath, file.buffer);
+
+      savedVideos.push({
+        original: file.originalname,
+        stored_path: `uploads/questions/${safeBatch}/${safeTest}/videos/${filename}`
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Videos uploaded successfully",
+      batch: safeBatch,
+      test: safeTest,
+      videos: savedVideos
+    });
+
+  } catch (err) {
+    console.error("UPLOAD VIDEO ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Server error while uploading videos"
+    });
+  }
+};
